@@ -10,7 +10,7 @@ Training an image classifier
 
 import torch
 
-device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(f'Run with device:{device}')
 
 if __name__ == '__main__':
@@ -34,12 +34,14 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     import numpy as np
 
+
     # functions to show an image
     def imshow(img):
         img = img / 2 + 0.5  # unnormalize
         npimg = img.numpy()
         plt.imshow(np.transpose(npimg, (1, 2, 0)))
         plt.show()
+
 
     # get some random training images
     dataiter = iter(trainloader)
@@ -53,6 +55,7 @@ if __name__ == '__main__':
     print("============================= 2. Define a Convolutional Neural Network ===============================")
     import torch.nn as nn
     import torch.nn.functional as F
+
 
     class Net(nn.Module):
         def __init__(self):
@@ -73,6 +76,7 @@ if __name__ == '__main__':
             x = self.fc3(x)
             return x
 
+
     net = Net().to(device)
     print(net)
 
@@ -90,50 +94,58 @@ if __name__ == '__main__':
     # 优化器的作用就是针对计算得到的参数梯度对网络参数进行更新，所以要想使得优化器起作用，主要需要两个东西：
     # - 优化器需要知道当前的网络模型的参数空间
     # - 优化器需要知道反向传播的梯度信息（即backward计算得到的信息）
+    import os
     import time
 
     start = time.time()
-    # for epoch in range(2):  # loop over the dataset multiple times
-    #     running_loss = 0.0
-    #     for i, data in enumerate(trainloader, 0):
-    #         # get the inputs; data is a list of [inputs, labels]
-    #         inputs, labels = data
-    #         inputs = inputs.to(device)
-    #         labels = labels.to(device)
-    #
-    #         # zero the parameter gradients
-    #         optimizer.zero_grad()
-    #
-    #         # forward + backward + optimize
-    #         outputs = net(inputs)
-    #         loss = criterion(outputs, labels)
-    #         loss.backward()
-    #         optimizer.step()
-    #
-    #         # print statistics
-    #         running_loss += loss.item()
-    #         if i % 2000 == 1999:  # print every 2000 mini-batches
-    #             currentTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-    #             print(f'[{currentTime}] [{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
-    #             running_loss = 0.0
+    PATH = './model/cifar_net.pth'
+    if os.path.exists(PATH):
+        net.load_state_dict(torch.load(PATH))
+    else:
+        # 如果没有训练过，则重新开始训练模型
+        for epoch in range(3):  # loop over the dataset multiple times
+            running_loss = 0.0
+            for i, data in enumerate(trainloader, 0):
+                # get the inputs; data is a list of [inputs, labels]
+                inputs, labels = data
+                inputs = inputs.to(device)
+                labels = labels.to(device)
+
+                # 先将梯度归零（optimizer.zero_grad()），
+                # zero the parameter gradients
+                optimizer.zero_grad()
+                # 然后反向传播计算得到每个参数的梯度值（loss.backward()），
+                # forward + backward + optimize
+                outputs = net(inputs)
+                loss = criterion(outputs, labels)
+                loss.backward()
+                # 最后通过梯度下降执行一步参数更新（optimizer.step()）
+                optimizer.step()
+
+                # print statistics
+                running_loss += loss.item()
+                if i % 2000 == 1999:  # print every 2000 mini-batches
+                    currentTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+                    print(f'[{currentTime}] [{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
+                    running_loss = 0.0
+                    # Let’s quickly save our trained model:
+                    torch.save(net.state_dict(), PATH)
 
     end = time.time()
     print("程序运行时间为：" + str(end - start) + "秒")
-    # Let’s quickly save our trained model:
-    PATH = 'model/cifar_net.pth'
-    torch.save(net.state_dict(), PATH)
     print('Finished Training')
 
     print("================================ 5. Test the network on the test data ================================")
     dataiter = iter(testloader)
     for _ in range(5):
         images, labels = next(dataiter)
+        results = net(images.to(device))
+        # print(results)
 
         # print images
         imshow(torchvision.utils.make_grid(images))
         print('GroundTruth: ', ' '.join(f'{classes[labels[j]]:5s}' for j in range(4)))
-        print('CNN  Result: ', ' '.join(f'{classes[net(images)]:5s}' for j in range(4)))
-
+        print('CNN  Result: ', ' '.join(f'{classes[torch.argmax(results[j])]:5s}' for j in range(4)))
 
 
 
