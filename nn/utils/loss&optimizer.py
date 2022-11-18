@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import torch
 import torch.nn as nn
 
@@ -12,6 +13,7 @@ class CNN(nn.Module):
     def forward(self, x):
         y = self.linear(x)
         return y
+
 
 if __name__ == '__main__':
     #  Check if we have a CUDA-capable device; if so, use it

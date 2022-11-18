@@ -1,19 +1,9 @@
+# -*- coding: utf-8 -*-
 import torch
+import torch.nn as nn
 
-
-class Net:
-    None
-
-
-class TheOptimizerClass:
-    None
-
-
-epoch = 00
-model = torch.nn.Module()
-loss = torch.nn.MSELoss()
-optimizer = torch.optim.Adam()
-PATH = './checkpoint.cp'
+# fake variable
+epoch, model, loss, optimizer, PATH, Net, args, kwargs, TheOptimizerClass = None
 
 # save
 torch.save({
@@ -25,8 +15,8 @@ torch.save({
 }, PATH)
 
 # load
-model = Net()  # Net(*args, **kwargs)
-optimizer = TheOptimizerClass()  # TheOptimizerClass(*args, **kwargs)
+model = Net(*args, **kwargs)
+optimizer = TheOptimizerClass(*args, **kwargs)
 
 checkpoint = torch.load(PATH)
 model.load_state_dict(checkpoint['model_state_dict'])
