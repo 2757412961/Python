@@ -15,7 +15,7 @@ torch.save(model.state_dict(), PATH)
 而load的方法就不一样了：
 '''
 
-###############Save on C/GPU, Load on C/GPU #########
+###############Save on GPU, Load on GPU #########
 device = torch.device("cuda")
 model = Net(*args, **kwargs)
 model.load_state_dict(torch.load(PATH))
