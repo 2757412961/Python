@@ -213,20 +213,25 @@ class ConvLSTM(nn.Module):
 
 
 if __name__ == "__main__":
-    data = torch.randn((5, 6, 3, 30, 30))
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print(f'Run with device:{device}')
+
+    data = torch.randn((5, 12, 3, 30, 30)).to(device)
     model = ConvLSTM(input_dim=3,
                      hidden_dim=[64, 64, 128],
                      kernel_size=[(3, 3), (5, 5), (7, 7)],
                      num_layers=3,
                      batch_first=True,
                      bias=True,
-                     return_all_layers=True)
+                     return_all_layers=True).to(device)
     layer_output_list, last_state_list = model(data)
 
     last_layer_output = layer_output_list[-1]
     last_layer_last_h, last_layer_last_c = last_state_list[-1]
 
     print(last_layer_output[:, -1, ...] == last_layer_last_h)
+    print(last_layer_output.size())
+    print(last_layer_output[:, -1, ...].size())
 
 
 
