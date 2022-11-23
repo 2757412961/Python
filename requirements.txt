@@ -56,5 +56,4 @@ iopath
 pygame==2.1.2
 
 # util
-fishbase
 colorlog

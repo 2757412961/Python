@@ -58,6 +58,5 @@ def gen_headers():
         "Accept-Encoding": "gzip, deflate, sdch, br",
         "Accept-Language": "zh-CN, zh; q=0.8, en; q=0.6",
         'Connection': 'keep-alive',
-        "Host": "data.remss.com",
         'User-Agent': random_agent(),
     }
