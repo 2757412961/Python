@@ -7,7 +7,7 @@
 
 import threading
 from concurrent import futures
-import progressbar
+from progressbar import *
 import requests
 import os
 import random
@@ -186,12 +186,11 @@ class MulThreadPoolDownload():
             for _, (url, tar_path) in enumerate(zip(url_list, tar_path_list)):
                 to_do.append(executor.submit(self.parse, url, tar_path))
             # 获取Future的结果，futures.as_completed(to_do)的参数是Future列表，返回迭代器。只有当有Future运行结束后，才产出future
-            done_iter = futures.as_completed(to_do)
-            with progressbar.ProgressBar(max_value=len(to_do)) as bar:
-                for i, future in enumerate(done_iter):  # future变量表示已完成的Future对象，所以后续future.result()绝不会阻塞
-                    result = future.result()
-                    print(result)
-                    bar.update(i)
+            widgets = ['Progress: ', Percentage(), ' ', Bar('#'), ' ', Timer(), ' ', ETA(), ' ', FileTransferSpeed()]
+            bar = ProgressBar(widgets=widgets)
+            for future in bar(to_do):  # future变量表示已完成的Future对象，所以后续future.result()绝不会阻塞
+                result = future.result()
+                print(result)
 
 
 if __name__ == "__main__":
