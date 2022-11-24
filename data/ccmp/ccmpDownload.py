@@ -11,6 +11,7 @@ from urllib.parse import urljoin
 from utils import HeaderUtil
 from utils import LogUtil
 from utils import FileUtil
+from utils.MultiDownload import MulThreadDownload, MulThreadConcurrentDownload, MulThreadPoolDownload
 
 # 日志
 LOG_URL = FileUtil.generate_logfile_url("logs/test.log")
@@ -110,16 +111,40 @@ def getDownloadUrls():
         # 从网站文件解析Url
         urls = getDownloadUrl('https://data.remss.com/ccmp/v03.0')
         saveList(urls, URLS_FILE)
-    logger.info(urls)
+    # logger.info(urls)
     return urls
 
 
 if __name__ == '__main__':
     urls = getDownloadUrls()
 
+    #### 用多线程下载 ####
+    # mtd = MulThreadDownload()
+    # groupUrls = [urls[i:i + 16] for i in range(0, len(urls), 16)]
+    # for group in groupUrls:
+    #     lst_url = []
+    #     lst_file = []
+    #     for _, url in enumerate(group):
+    #         sub_path = url.replace(BASE_URL, '')
+    #         file_path = SAVE_DIR + sub_path
+    #         FileUtil.check_generate_files(file_path)
+    #         if not FileUtil.exist(file_path):
+    #             lst_url.append(url)
+    #             lst_file.append(file_path)
+    #     mtd.download(lst_url, lst_file)
+
+    #### 用线程池下载 ####
+    mtpd = MulThreadPoolDownload()
+    lst_url = []
+    lst_file = []
     for _, url in enumerate(urls):
         sub_path = url.replace(BASE_URL, '')
-        abs_path = FileUtil.join_path(SAVE_DIR, sub_path)
-        print(abs_path)
+        file_path = SAVE_DIR + sub_path
+        FileUtil.check_generate_files(file_path)
+        if not FileUtil.exist(file_path):
+            lst_url.append(url)
+            lst_file.append(file_path)
+    mtpd.download(lst_url, lst_file)
+
 
     exit(0)
