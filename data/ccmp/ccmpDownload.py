@@ -110,11 +110,16 @@ def getDownloadUrls():
         # 从网站文件解析Url
         urls = getDownloadUrl('https://data.remss.com/ccmp/v03.0')
         saveList(urls, URLS_FILE)
-    logger.warning(urls)
+    logger.info(urls)
     return urls
 
 
 if __name__ == '__main__':
     urls = getDownloadUrls()
+
+    for _, url in enumerate(urls):
+        sub_path = url.replace(BASE_URL, '')
+        abs_path = FileUtil.join_path(SAVE_DIR, sub_path)
+        print(abs_path)
 
     exit(0)

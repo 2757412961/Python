@@ -73,6 +73,11 @@ def get_work_dir(abs_path):
     return dir_name
 
 
+def join_path(base_path, *paths):
+    path = os.path.join(base_path, *paths)
+    return path
+
+
 def generate_logfile_url(filename, base_dir=PROJECT_ABS_PATH):
     """
     获取日志文件绝对路径，从项目文件开始
