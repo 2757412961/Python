@@ -6,9 +6,10 @@
 # @Desc  :
 
 import threading
+from concurrent import futures
+import progressbar
 import requests
 import os
-from urllib.parse import urljoin
 import random
 
 
@@ -28,6 +29,7 @@ class BulkDownload(threading.Thread):
         headers = {
             "Range": "bytes=%s-%s" % (self.startpos, self.endpos)
         }
+        # resp.content是bytes类型，而resp.text是str类型
         response = requests.get(self.url, headers=headers)
         self.fd.seek(self.startpos)
         self.fd.write(response.content)
@@ -119,6 +121,14 @@ class MulThreadDownload():
         threading.BoundedSemaphore(thread_num)
 
     def download(self, url_list, tar_path_list):
+        if type(url_list) is list and type(tar_path_list) is list:
+            None
+        elif type(url_list) is str and type(tar_path_list) is str:
+            url_list = [url_list]
+            tar_path_list = [tar_path_list]
+        else:
+            raise Exception("Parameter not match!")
+
         thread_list = []
         for _, (url, tar_path) in enumerate(zip(url_list, tar_path_list)):
             # 请空并生成文件
@@ -131,9 +141,62 @@ class MulThreadDownload():
         return thread_list
 
 
+class MulThreadPoolDownload():
+
+    def __init__(self, workers=32):
+        self.workers = workers
+        self.ua = [
+            'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36',
+            'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.2995.0 Safari/537.36',
+            'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2986.0 Safari/537.36',
+            'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.0 Safari/537.36',
+            'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.0 Safari/537.36',
+            'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.0 Safari/537.36',
+            'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.0 Safari/537.36',
+            'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.0 Safari/537.36',
+            'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.0 Safari/537.36',
+            'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.0 Safari/537.36',
+            'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.0 Safari/537.36',
+            'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.0 Safari/537.36'
+        ]
+
+    def parse(self, url, file_path):
+        headers = {
+            "User-Agent": random.choice(self.ua)
+        }
+        # 获取文件的大小
+        response = requests.get(url, headers=headers)
+        f = open(file_path, "wb")
+        for chunk in response.iter_content(chunk_size=512):
+            if chunk:
+                f.write(chunk)
+        print(f"finish: {url}")
+
+    def download(self, url_list, tar_path_list):
+        if type(url_list) is list and type(tar_path_list) is list:
+            None
+        elif type(url_list) is str and type(tar_path_list) is str:
+            url_list = [url_list]
+            tar_path_list = [tar_path_list]
+        else:
+            raise Exception("Parameter not match!")
+
+        with futures.ThreadPoolExecutor(self.workers) as executor:
+            to_do = []
+            for _, (url, tar_path) in enumerate(zip(url_list, tar_path_list)):
+                to_do.append(executor.submit(self.parse, url, tar_path))
+            # 获取Future的结果，futures.as_completed(to_do)的参数是Future列表，返回迭代器。只有当有Future运行结束后，才产出future
+            done_iter = futures.as_completed(to_do)
+            with progressbar.ProgressBar(max_value=len(to_do)) as bar:
+                for i, future in enumerate(done_iter):  # future变量表示已完成的Future对象，所以后续future.result()绝不会阻塞
+                    result = future.result()
+                    print(result)
+                    bar.update(i)
+
+
 if __name__ == "__main__":
     # for _, (url, tar_path) in enumerate(zip([1, 2, 3], ['a', 'b', 'c'])):
     #     # 请空并生成文件
     #     print(url, tar_path)
     mtd = MulThreadDownload()
-    mtd.download(['https://github.com/jiagit/MultiDownload/archive/refs/heads/master.zip'], ['test'])
+    mtd.download('https://github.com/jiagit/MultiDownload/archive/refs/heads/master.zip', 'test')

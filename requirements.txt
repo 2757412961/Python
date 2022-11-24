@@ -57,3 +57,4 @@ pygame==2.1.2
 
 # util
 colorlog
+progressbar
