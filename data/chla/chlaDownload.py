@@ -17,7 +17,8 @@ from utils.MultiDownload import MulThreadDownload, MulThreadConcurrentDownload, 
 LOG_URL = FileUtil.generate_logfile_url("logs/chla.log")
 logger = LogUtil.Logger(LOG_URL)
 # 常量
-BASE_URL = 'https://oceandata.sci.gsfc.nasa.gov/cgi/getfile'
+# BASE_URL = 'https://oceandata.sci.gsfc.nasa.gov/cgi/getfile'
+BASE_URL = 'https://oceancolor.gsfc.nasa.gov/showimages/MODISA/IMAGES/CHL/L3'
 URLS_FILE = 'urls.txt'
 SAVE_DIR = 'F:\Ocean\MODIS_AQUA_Chla'
 
@@ -35,13 +36,13 @@ def read_url():
 
 
 def getDownloadUrls():
-    return read_url()
+    urls = read_url()
+    logger.info(urls)
+    return urls
 
 
 if __name__ == '__main__':
     urls = getDownloadUrls()
-
-    print(urls)
 
     #### 用线程池下载 ####
     mtpd = MulThreadPoolDownload()
@@ -50,6 +51,7 @@ if __name__ == '__main__':
     urls.reverse()
     for _, url in enumerate(urls):
         sub_path = url.replace(BASE_URL, '')
+        sub_path = sub_path[10:]
         file_path = SAVE_DIR + sub_path
         FileUtil.check_generate_files(file_path)
         if not FileUtil.exist(file_path):

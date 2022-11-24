@@ -14,7 +14,7 @@ from utils import FileUtil
 from utils.MultiDownload import MulThreadDownload, MulThreadConcurrentDownload, MulThreadPoolDownload
 
 # 日志
-LOG_URL = FileUtil.generate_logfile_url("logs/test.log")
+LOG_URL = FileUtil.generate_logfile_url("logs/ccmp.log")
 logger = LogUtil.Logger(LOG_URL)
 # 常量
 BASE_URL = 'https://data.remss.com'
@@ -137,6 +137,7 @@ if __name__ == '__main__':
     mtpd = MulThreadPoolDownload()
     lst_url = []
     lst_file = []
+    urls.reverse()
     for _, url in enumerate(urls):
         sub_path = url.replace(BASE_URL, '')
         file_path = SAVE_DIR + sub_path
