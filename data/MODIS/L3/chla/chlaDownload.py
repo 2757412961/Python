@@ -17,9 +17,8 @@ from utils.MultiDownload import MulThreadDownload, MulThreadConcurrentDownload, 
 LOG_URL = FileUtil.generate_logfile_url("logs/chla.log")
 logger = LogUtil.Logger(LOG_URL)
 # 常量
-# BASE_URL = 'https://oceandata.sci.gsfc.nasa.gov/cgi/getfile'
-BASE_URL = 'https://oceancolor.gsfc.nasa.gov/showimages/MODISA/IMAGES/CHL/L3'
 URLS_FILE = 'urls.txt'
+BASE_URL = 'https://oceancolor.gsfc.nasa.gov/showimages/MODISA/IMAGES/CHL/L3'
 SAVE_DIR = 'F:\Ocean\MODIS_AQUA_Chla'
 
 

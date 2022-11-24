@@ -14,21 +14,12 @@ from utils import FileUtil
 from utils.MultiDownload import MulThreadDownload, MulThreadConcurrentDownload, MulThreadPoolDownload
 
 # 日志
-LOG_URL = FileUtil.generate_logfile_url("logs/jmaco2.log")
+LOG_URL = FileUtil.generate_logfile_url("logs/pic.log")
 logger = LogUtil.Logger(LOG_URL)
 # 常量
 URLS_FILE = 'urls.txt'
-BASE_URL = 'https://www.data.jma.go.jp/gmd/kaiyou/data/english/co2_flux'
-SAVE_DIR = 'F:\Ocean\JMA_Ocean_CO2_Map'
-
-
-def print_url_lst():
-    for i in range(90, 100):
-        print('https://www.data.jma.go.jp/gmd/kaiyou/data/english/co2_flux/grid/JMA_co2map_19' + str(i) + '.ZIP')
-    for i in range(0, 10):
-        print('https://www.data.jma.go.jp/gmd/kaiyou/data/english/co2_flux/grid/JMA_co2map_200' + str(i) + '.ZIP')
-    for i in range(10, 21):
-        print('https://www.data.jma.go.jp/gmd/kaiyou/data/english/co2_flux/grid/JMA_co2map_20' + str(i) + '.ZIP')
+BASE_URL = 'https://oceancolor.gsfc.nasa.gov/showimages/MODISA/IMAGES/PIC/L3'
+SAVE_DIR = 'F:\Ocean\MODIS_AQUA_PIC'
 
 
 def write_url(lst):
@@ -59,7 +50,7 @@ if __name__ == '__main__':
     urls.reverse()
     for _, url in enumerate(urls):
         sub_path = url.replace(BASE_URL, '')
-        sub_path = sub_path[5:]
+        sub_path = sub_path[10:]
         file_path = SAVE_DIR + sub_path
         FileUtil.check_generate_files(file_path)
         if not FileUtil.exist(file_path):

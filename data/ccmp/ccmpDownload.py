@@ -7,7 +7,6 @@
 
 from bs4 import BeautifulSoup
 import requests
-from urllib.parse import urljoin
 from utils import HeaderUtil
 from utils import LogUtil
 from utils import FileUtil
@@ -17,8 +16,8 @@ from utils.MultiDownload import MulThreadDownload, MulThreadConcurrentDownload, 
 LOG_URL = FileUtil.generate_logfile_url("logs/ccmp.log")
 logger = LogUtil.Logger(LOG_URL)
 # 常量
-BASE_URL = 'https://data.remss.com'
 URLS_FILE = 'urls.npy'
+BASE_URL = 'https://data.remss.com'
 SAVE_DIR = 'F:\Ocean\CCMP_V3'
 
 
