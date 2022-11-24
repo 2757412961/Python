@@ -37,6 +37,11 @@ os.path.join(dir_name, 'pac01', 'demo.txt')
 '''
 
 
+def exist(file):
+    is_exist = os.path.exists(file)
+    return is_exist
+
+
 def check_generate_dirs(dir):
     """
     检查并创建文件夹完整目录
@@ -47,9 +52,15 @@ def check_generate_dirs(dir):
         os.makedirs(dir)
 
 
-# filename = '/Users/joseph/work/python/poem.txt'
-# if not os.path.exists(filename):
-#     os.system(r"touch {}".format(path))#调用系统命令行来创建文件
+def check_generate_files(file):
+    """
+    检查并创建文件完整目录
+    :param file:
+    :return:
+    """
+    work_dir = get_work_dir(file)
+    check_generate_dirs(work_dir)
+
 
 def get_work_dir(abs_path):
     """
@@ -71,6 +82,6 @@ def generate_logfile_url(filename, base_dir=PROJECT_ABS_PATH):
     """
     # 拼接
     file_path = os.path.join(base_dir, filename)
-    work_dir = get_work_dir(file_path)
-    check_generate_dirs(work_dir)
+    # 检查
+    check_generate_files(file_path)
     return file_path
