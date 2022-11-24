@@ -56,5 +56,5 @@ iopath
 pygame==2.1.2
 
 # util
-colorlog
-progressbar
+colorlog==6.7.0
+progressbar==2.5
