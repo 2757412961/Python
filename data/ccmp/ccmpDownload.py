@@ -141,10 +141,13 @@ if __name__ == '__main__':
         sub_path = url.replace(BASE_URL, '')
         file_path = SAVE_DIR + sub_path
         FileUtil.check_generate_files(file_path)
+        if file_path.find('199') >= 0:
+            continue
         if not FileUtil.exist(file_path):
             lst_url.append(url)
             lst_file.append(file_path)
     mtpd.download(lst_url, lst_file)
 
-
     exit(0)
+
+
