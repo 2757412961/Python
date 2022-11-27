@@ -21,22 +21,49 @@ SAVE_DIR = 'F:\Ocean'
 # key=种类 value=影像值要素
 PARAMETERS = {
     'CHL': ['chlor_a'],
-    'RRS': ['aot_869']
+    'POC': ['poc'],
+    'PIC': ['pic'],
+    'SST': ['sst'],
+    'SST4': ['sst4'],
+    'RRS': ['aot_869',
+            'Rrs_412',
+            'Rrs_443',
+            'Rrs_469',
+            'Rrs_488',
+            'Rrs_531',
+            'Rrs_547',
+            'Rrs_555',
+            'Rrs_667',
+            'Rrs_678']
 }
 
 
-def get_web_url(classification, parameter, year, month, day):
+def get_web_url_png(classification, parameter, year, month, day):
     # https://oceancolor.gsfc.nasa.gov/showimages/MODISA/IMAGES/CHL/L3/2002/0716/AQUA_MODIS.20020716.L3m.DAY.CHL.chlor_a.4km.nc.png
-    return 'https://oceancolor.gsfc.nasa.gov/showimages/MODISA/IMAGES/' + classification + '/L3/' + year + '/' + month + day \
-           + '/AQUA_MODIS.' + year + month + day + '.L3m.DAY.' + classification + '.' + parameter + '.4km.nc.png'
+    return f'https://oceancolor.gsfc.nasa.gov/showimages/MODISA/IMAGES/{classification}/L3/{year}/{month}{day}' \
+           f'/AQUA_MODIS.{year}{month}{day}.L3m.DAY.{classification}.{parameter}.4km.nc.png'
+
+
+def get_file_path_png(classification, parameter, year, month, day):
+    # https://oceancolor.gsfc.nasa.gov/showimages/MODISA/IMAGES/CHL/L3/2002/0716/AQUA_MODIS.20020716.L3m.DAY.CHL.chlor_a.4km.nc.png
+    return f'{SAVE_DIR}\MODIS_AQUA_{classification}_{parameter}' \
+           f'\AQUA_MODIS.{year}{month}{day}.L3m.DAY.{classification}.{parameter}.4km.nc.png'
+
+
+def get_web_url(classification, parameter, year, month, day):
+    # https://oceandata.sci.gsfc.nasa.gov/cgi/getfile/AQUA_MODIS.20020719.L3m.DAY.CHL.chlor_a.4km.nc
+    return f'https://oceandata.sci.gsfc.nasa.gov/cgi/getfile' \
+           f'/AQUA_MODIS.{year}{month}{day}.L3m.DAY.{classification}.{parameter}.4km.nc'
 
 
 def get_file_path(classification, parameter, year, month, day):
-    return f"{SAVE_DIR}\MODIS_AQUA_{classification}_{parameter}\AQUA_MODIS.{year}{month}{day}.L3m.DAY.{classification}.{parameter}.4km.nc.png"
+    # https://oceandata.sci.gsfc.nasa.gov/cgi/getfile/AQUA_MODIS.20020719.L3m.DAY.CHL.chlor_a.4km.nc
+    return f'{SAVE_DIR}\MODIS_AQUA_{classification}_{parameter}' \
+           f'\AQUA_MODIS.{year}{month}{day}.L3m.DAY.{classification}.{parameter}.4km.nc'
 
 
 if __name__ == '__main__':
-    begin = datetime.date(2013, 1, 1)
+    begin = datetime.date(2003, 1, 1)
     end = datetime.date(2022, 1, 1)
 
     for k, vs in PARAMETERS.items():
@@ -46,8 +73,11 @@ if __name__ == '__main__':
             files = []
             for i in range((end - begin).days + 1):
                 time = begin + datetime.timedelta(days=i)
-                url = get_web_url(k, v, str(time.year), str(time.month), str(time.day))
-                file = get_file_path(k, v, str(time.year), str(time.month), str(time.day))
+                year = time.strftime("%Y")
+                month = time.strftime("%m")
+                day = time.strftime("%d")
+                url = get_web_url_png(k, v, year, month, day)
+                file = get_file_path_png(k, v, year, month, day)
                 FileUtil.check_generate_files(file)
                 if not FileUtil.exist(file):
                     urls.append(url)
@@ -56,21 +86,5 @@ if __name__ == '__main__':
             # #### 用线程池下载 ####
             mtpd = MulThreadPoolDownload()
             mtpd.download(urls, files)
-
-    # urls = getDownloadUrls()
-    #
-    # #### 用线程池下载 ####
-    # mtpd = MulThreadPoolDownload()
-    # lst_url = []
-    # lst_file = []
-    # urls.reverse()
-    # for _, url in enumerate(urls):
-    #     sub_path = url.replace(BASE_URL, '')
-    #     sub_path = sub_path[10:]
-    #     file_path = SAVE_DIR + sub_path
-    #     FileUtil.check_generate_files(file_path)
-    #     if not FileUtil.exist(file_path):
-    #         lst_url.append(url)
-    #         lst_file.append(file_path)
 
     exit(0)

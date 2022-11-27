@@ -4,7 +4,7 @@
 # @Date  : 2022/11/24
 # @Update: 2022/11/24
 # @Desc  :
-
+import logging
 import threading
 from concurrent import futures
 from progressbar import *
@@ -189,7 +189,10 @@ class MulThreadPoolDownload():
             widgets = ['Progress: ', Percentage(), ' ', Bar('#'), ' ', Timer(), ' ', ETA(), ' ', FileTransferSpeed()]
             bar = ProgressBar(widgets=widgets)
             for future in bar(to_do):  # future变量表示已完成的Future对象，所以后续future.result()绝不会阻塞
-                result = future.result()
+                try:
+                    result = future.result()
+                except Exception as e:
+                    print(e)
                 print(result)
 
 
