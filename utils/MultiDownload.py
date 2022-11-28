@@ -170,7 +170,8 @@ class MulThreadPoolDownload():
         for chunk in response.iter_content(chunk_size=512):
             if chunk:
                 f.write(chunk)
-        print(f"finish: {url}")
+        currentTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+        print(f"{currentTime}|finish: {url}")
 
     def download(self, url_list, tar_path_list):
         if type(url_list) is list and type(tar_path_list) is list:
@@ -191,9 +192,9 @@ class MulThreadPoolDownload():
             for future in bar(to_do):  # future变量表示已完成的Future对象，所以后续future.result()绝不会阻塞
                 try:
                     result = future.result()
+                    print(result)
                 except Exception as e:
                     print(e)
-                print(result)
 
 
 if __name__ == "__main__":

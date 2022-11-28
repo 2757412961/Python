@@ -84,7 +84,7 @@ if __name__ == '__main__':
                     files.append(file)
 
             # #### 用线程池下载 ####
-            mtpd = MulThreadPoolDownload()
+            mtpd = MulThreadPoolDownload(64)
             mtpd.download(urls, files)
 
     exit(0)
