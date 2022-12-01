@@ -16,27 +16,6 @@ logger = LogUtil.Logger(LOG_URL)
 # 常量
 SAVE_DIR = 'F:\Ocean'
 
-# refer to web url
-# https://oceancolor.gsfc.nasa.gov/l3/
-# key=种类 value=影像值要素
-PARAMETERS = {
-    'CHL': ['chlor_a'],
-    'POC': ['poc'],
-    'PIC': ['pic'],
-    'SST': ['sst'],
-    'SST4': ['sst4'],
-    'RRS': ['aot_869',
-            'Rrs_412',
-            'Rrs_443',
-            'Rrs_469',
-            'Rrs_488',
-            'Rrs_531',
-            'Rrs_547',
-            'Rrs_555',
-            'Rrs_667',
-            'Rrs_678']
-}
-
 
 def get_web_url_png(classification, parameter, year, month, day):
     # https://oceancolor.gsfc.nasa.gov/showimages/MODISA/IMAGES/CHL/L3/2002/0716/AQUA_MODIS.20020716.L3m.DAY.CHL.chlor_a.4km.nc.png
@@ -62,6 +41,27 @@ def get_file_path(classification, parameter, year, month, day):
            f'\AQUA_MODIS.{year}{month}{day}.L3m.DAY.{classification}.{parameter}.4km.nc'
 
 
+# refer to web url
+# https://oceancolor.gsfc.nasa.gov/l3/
+# key=种类 value=影像值要素
+PARAMETERS = {
+    'CHL': ['chlor_a'],
+    'POC': ['poc'],
+    'PIC': ['pic'],
+    'SST': ['sst'],
+    'SST4': ['sst4'],
+    'RRS': ['aot_869',
+            'Rrs_412',
+            'Rrs_443',
+            'Rrs_469',
+            'Rrs_488',
+            'Rrs_531',
+            'Rrs_547',
+            'Rrs_555',
+            'Rrs_667',
+            'Rrs_678']
+}
+
 if __name__ == '__main__':
     begin = datetime.date(2003, 1, 1)
     end = datetime.date(2022, 1, 1)
@@ -84,7 +84,7 @@ if __name__ == '__main__':
                     files.append(file)
 
             # #### 用线程池下载 ####
-            mtpd = MulThreadPoolDownload(64)
+            mtpd = MulThreadPoolDownload()
             mtpd.download(urls, files)
 
     exit(0)
