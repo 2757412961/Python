@@ -12,3 +12,6 @@
 # logs
 **/logs/**
 
+# Distribution / packaging
+src/
+
