@@ -7,6 +7,7 @@ import random
 import torch
 import torch.utils.data as data
 
+
 def load_mnist(root):
     # Load MNIST dataset for generating training data.
     path = os.path.join(root, 'train-images-idx3-ubyte.gz')
