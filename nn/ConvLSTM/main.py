@@ -168,7 +168,7 @@ def train():
             optimizer.step()
             t.set_postfix({
                 'trainloss': '{:.6f}'.format(loss_aver),
-                'epoch': '{:02d}'.format(epoch)
+                'epoch': '{:04d}'.format(epoch)
             })
         tb.add_scalar('TrainLoss', loss_aver, epoch)
         ######################
