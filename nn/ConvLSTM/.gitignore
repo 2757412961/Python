@@ -1,0 +1,7 @@
+data/train-images-idx3-ubyte.gz
+**/runs/**
+**/save_model/**
+
+
+
+
