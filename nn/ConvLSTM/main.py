@@ -10,6 +10,7 @@
 '''
 
 import os
+
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 from encoder import Encoder
 from decoder import Decoder
@@ -21,13 +22,14 @@ from torch import nn
 from torch.optim import lr_scheduler
 import torch.optim as optim
 import sys
+import time
 from earlystopping import EarlyStopping
 from tqdm import tqdm
 import numpy as np
 from tensorboardX import SummaryWriter
 import argparse
 
-TIMESTAMP = "2020-03-09T00-00-00"
+# args
 parser = argparse.ArgumentParser()
 parser.add_argument('-clstm',
                     '--convlstm',
@@ -53,6 +55,7 @@ parser.add_argument('-frames_output',
 parser.add_argument('-epochs', default=500, type=int, help='sum of epochs')
 args = parser.parse_args()
 
+# Setting
 random_seed = 1996
 np.random.seed(random_seed)
 torch.manual_seed(random_seed)
@@ -63,8 +66,16 @@ else:
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
+# Global
+TIMESTAMP = time.strftime('%Y-%m-%dT%H-%M-%S', time.localtime(time.time()))
 save_dir = './save_model/' + TIMESTAMP
+run_dir = './runs/' + TIMESTAMP
+if not os.path.isdir(save_dir):
+    os.makedirs(save_dir)
+if not os.path.isdir(run_dir):
+    os.makedirs(run_dir)
 
+# Data
 trainFolder = MovingMNIST(is_train=True,
                           root='data/',
                           n_frames_input=args.frames_input,
@@ -82,35 +93,35 @@ validLoader = torch.utils.data.DataLoader(validFolder,
                                           batch_size=args.batch_size,
                                           shuffle=False)
 
-if args.convlstm:
-    encoder_params = convlstm_encoder_params
-    decoder_params = convlstm_decoder_params
-if args.convgru:
-    encoder_params = convgru_encoder_params
-    decoder_params = convgru_decoder_params
-else:
-    encoder_params = convgru_encoder_params
-    decoder_params = convgru_decoder_params
-
 
 def train():
     '''
     main function to run the training
     '''
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+    # net
+    if args.convlstm:
+        encoder_params = convlstm_encoder_params
+        decoder_params = convlstm_decoder_params
+    if args.convgru:
+        encoder_params = convgru_encoder_params
+        decoder_params = convgru_decoder_params
+    else:
+        encoder_params = convgru_encoder_params
+        decoder_params = convgru_decoder_params
+
     encoder = Encoder(encoder_params[0], encoder_params[1]).cuda()
     decoder = Decoder(decoder_params[0], decoder_params[1]).cuda()
     net = ED(encoder, decoder)
-    run_dir = './runs/' + TIMESTAMP
-    if not os.path.isdir(run_dir):
-        os.makedirs(run_dir)
-    tb = SummaryWriter(run_dir)
-    # initialize the early_stopping object
-    early_stopping = EarlyStopping(patience=20, verbose=True)
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
     if torch.cuda.device_count() > 1:
         net = nn.DataParallel(net)
     net.to(device)
+
+    # initialize the early_stopping object
+    early_stopping = EarlyStopping(patience=20, verbose=True)
+    # SummaryWriter
+    tb = SummaryWriter(run_dir)
 
     if os.path.exists(os.path.join(save_dir, 'checkpoint.pth.tar')):
         # load existing model
@@ -121,8 +132,6 @@ def train():
         optimizer.load_state_dict(model_info['optimizer'])
         cur_epoch = model_info['epoch'] + 1
     else:
-        if not os.path.isdir(save_dir):
-            os.makedirs(save_dir)
         cur_epoch = 0
     lossfunction = nn.MSELoss().cuda()
     optimizer = optim.Adam(net.parameters(), lr=args.lr)
@@ -178,7 +187,7 @@ def train():
                 loss_aver = loss.item() / args.batch_size
                 # record validation loss
                 valid_losses.append(loss_aver)
-                #print ("validloss: {:.6f},  epoch : {:02d}".format(loss_aver,epoch),end = '\r', flush=True)
+                # print ("validloss: {:.6f},  epoch : {:02d}".format(loss_aver,epoch),end = '\r', flush=True)
                 t.set_postfix({
                     'validloss': '{:.6f}'.format(loss_aver),
                     'epoch': '{:02d}'.format(epoch)
