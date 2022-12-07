@@ -21,9 +21,6 @@ from netCDF4 import Dataset
 import torch
 import torchvision.transforms as transforms
 
-import sys
-
-print(sys.path)
 from utils import FileUtil, LogUtil
 
 # 日志
@@ -73,12 +70,14 @@ class SensorDataset(torch.utils.data.Dataset):
             'test': 0.1
         }
         self.data_type = data_type
+        total = (self.end - self.begin).days
         if data_type == 'train':
-            None
+            self.begin = self.begin
         elif data_type == 'valid':
-            self.begin += datetime.timedelta(days=self.total() * self.props['train'])
+            self.begin = self.begin + datetime.timedelta(days=total * self.props['train'])
         elif data_type == 'test':
-            self.begin += datetime.timedelta(days=self.total() * (self.props['train']+self.props['valid']))
+            self.begin = self.begin + datetime.timedelta(days=total * (self.props['train'] + self.props['valid']))
+        self.end = self.begin + datetime.timedelta(days=total * self.props[data_type])
 
     def __getitem__(self, index):
         time = self.begin + datetime.timedelta(days=index)
@@ -108,10 +107,6 @@ class SensorDataset(torch.utils.data.Dataset):
         return self.transform(src), self.transform(tar)
 
     def __len__(self):
-        prop = self.props[self.data_type]
-        return (self.end - self.begin).days * prop
-
-    def total(self):
         return (self.end - self.begin).days
 
     def get_file_path_png(self, classification, parameter, year, month, day):
@@ -125,6 +120,18 @@ if __name__ == '__main__':
     begin = datetime.date(2003, 1, 1)
     end = datetime.date(2022, 1, 1)
 
-    sensor = SensorDataset('/home/zjh/Ocean', begin, end)
-    print(len(sensor))
-    print(sensor[523])
+    train = SensorDataset('/home/zjh/Ocean', begin, end, 'train')
+    print(train.begin, train.end)
+    print(len(train))
+
+    valid = SensorDataset('/home/zjh/Ocean', begin, end, 'valid')
+    print(valid.begin, valid.end)
+    print(len(valid))
+
+    test = SensorDataset('/home/zjh/Ocean', begin, end, 'test')
+    print(test.begin, test.end)
+    print(len(test))
+
+    print(train[523])
+    print(valid[523])
+    print(test[523])

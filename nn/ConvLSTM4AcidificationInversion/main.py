@@ -16,13 +16,14 @@ from encoder import Encoder
 from decoder import Decoder
 from model import ED
 from net_params import convlstm_encoder_params, convlstm_decoder_params, convgru_encoder_params, convgru_decoder_params
-from data.mm import MovingMNIST
+from data.sensor import SensorDataset
 import torch
 from torch import nn
 from torch.optim import lr_scheduler
 import torch.optim as optim
 import sys
 import time
+import datetime
 from earlystopping import EarlyStopping
 from tqdm import tqdm
 import numpy as np
@@ -67,6 +68,7 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
 # Global
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 TIMESTAMP = time.strftime('%Y-%m-%dT%H-%M-%S', time.localtime(time.time()))
 save_dir = './save_model/' + TIMESTAMP
 run_dir = './runs/' + TIMESTAMP
@@ -75,31 +77,28 @@ if not os.path.isdir(save_dir):
 if not os.path.isdir(run_dir):
     os.makedirs(run_dir)
 
-# Data
-trainFolder = MovingMNIST(is_train=True,
-                          root='data/',
-                          n_frames_input=args.frames_input,
-                          n_frames_output=args.frames_output,
-                          num_objects=[3])
-validFolder = MovingMNIST(is_train=False,
-                          root='data/',
-                          n_frames_input=args.frames_input,
-                          n_frames_output=args.frames_output,
-                          num_objects=[3])
-trainLoader = torch.utils.data.DataLoader(trainFolder,
-                                          batch_size=args.batch_size,
-                                          shuffle=False)
-validLoader = torch.utils.data.DataLoader(validFolder,
-                                          batch_size=args.batch_size,
-                                          shuffle=False)
+
+def data():
+    """
+    Data
+    :return:
+    """
+    ##################
+    begin = datetime.date(2003, 1, 1)
+    end = datetime.date(2022, 1, 1)
+    ##################
+    trainFolder = SensorDataset('/home/zjh/Ocean', begin, end, 'train')
+    trainLoader = torch.utils.data.DataLoader(trainFolder,
+                                              batch_size=args.batch_size,
+                                              shuffle=False)
+    validFolder = SensorDataset('/home/zjh/Ocean', begin, end, 'valid')
+    validLoader = torch.utils.data.DataLoader(validFolder,
+                                              batch_size=args.batch_size,
+                                              shuffle=False)
+    return trainLoader, validLoader
 
 
-def train():
-    '''
-    main function to run the training
-    '''
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
+def network():
     # net
     if args.convlstm:
         encoder_params = convlstm_encoder_params
@@ -113,16 +112,35 @@ def train():
 
     encoder = Encoder(encoder_params[0], encoder_params[1]).cuda()
     decoder = Decoder(decoder_params[0], decoder_params[1]).cuda()
+
     net = ED(encoder, decoder)
     if torch.cuda.device_count() > 1:
         net = nn.DataParallel(net)
     net.to(device)
+    return net
 
-    # initialize the early_stopping object
-    early_stopping = EarlyStopping(patience=20, verbose=True)
+
+def train():
+    '''
+    main function to run the training
+    '''
+
     # SummaryWriter
     tb = SummaryWriter(run_dir)
+    # Data
+    trainLoader, validLoader = data()
+    # Network
+    net = network()
+    # Loss Function
+    lossfunction = nn.MSELoss().cuda()
+    # Optimizer
+    optimizer = optim.Adam(net.parameters(), lr=args.lr)
+    # Learning rate
+    pla_lr_scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.5, patience=4, verbose=True)
+    # Initialize the early_stopping object
+    early_stopping = EarlyStopping(patience=20, verbose=True)
 
+    # Reload Model
     if os.path.exists(os.path.join(save_dir, 'checkpoint.pth.tar')):
         # load existing model
         print('==> loading existing model')
@@ -133,12 +151,6 @@ def train():
         cur_epoch = model_info['epoch'] + 1
     else:
         cur_epoch = 0
-    lossfunction = nn.MSELoss().cuda()
-    optimizer = optim.Adam(net.parameters(), lr=args.lr)
-    pla_lr_scheduler = lr_scheduler.ReduceLROnPlateau(optimizer,
-                                                      factor=0.5,
-                                                      patience=4,
-                                                      verbose=True)
 
     # to track the training loss as the model trains
     train_losses = []
@@ -148,6 +160,7 @@ def train():
     avg_train_losses = []
     # to track the average validation loss per epoch as the model trains
     avg_valid_losses = []
+
     # mini_val_loss = np.inf
     for epoch in range(cur_epoch, args.epochs + 1):
         ###################
