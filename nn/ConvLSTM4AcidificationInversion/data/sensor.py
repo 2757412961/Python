@@ -22,6 +22,7 @@ import torch
 import torchvision.transforms as transforms
 
 import sys
+
 print(sys.path)
 from utils import FileUtil, LogUtil
 
@@ -61,11 +62,23 @@ PARAMETERS = {
 
 
 class SensorDataset(torch.utils.data.Dataset):
-    def __init__(self, root, start_date, end_date):
+    def __init__(self, root, start_date, end_date, data_type):
         self.root = root
         self.begin = start_date
         self.end = end_date
         self.transform = transforms.ToTensor()
+        self.props = {
+            'train': 0.8,
+            'valid': 0.1,
+            'test': 0.1
+        }
+        self.data_type = data_type
+        if data_type == 'train':
+            None
+        elif data_type == 'valid':
+            self.begin += datetime.timedelta(days=self.total() * self.props['train'])
+        elif data_type == 'test':
+            self.begin += datetime.timedelta(days=self.total() * (self.props['train']+self.props['valid']))
 
     def __getitem__(self, index):
         time = self.begin + datetime.timedelta(days=index)
@@ -95,6 +108,10 @@ class SensorDataset(torch.utils.data.Dataset):
         return self.transform(src), self.transform(tar)
 
     def __len__(self):
+        prop = self.props[self.data_type]
+        return (self.end - self.begin).days * prop
+
+    def total(self):
         return (self.end - self.begin).days
 
     def get_file_path_png(self, classification, parameter, year, month, day):
@@ -111,7 +128,3 @@ if __name__ == '__main__':
     sensor = SensorDataset('/home/zjh/Ocean', begin, end)
     print(len(sensor))
     print(sensor[523])
-
-
-
-
