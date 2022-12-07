@@ -21,6 +21,10 @@ from netCDF4 import Dataset
 import torch
 import torchvision.transforms as transforms
 
+import sys
+print(sys.path)
+import utils
+print(utils)
 from utils import FileUtil, LogUtil
 
 # 日志
