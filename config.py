@@ -5,4 +5,5 @@
 # @Update: 2022/11/23
 # @Desc  : Configuration
 
-PROJECT_PATH = 'E:\\Github\\Python'
+# PROJECT_PATH = 'E:\\Github\\Python'
+PROJECT_PATH = '/tmp/pycharm_project_119'
