@@ -7,6 +7,7 @@
 import logging
 import threading
 from concurrent import futures
+from tqdm import tqdm, trange
 from progressbar import *
 import requests
 import os
@@ -53,7 +54,7 @@ class MulThreadConcurrentDownload():
         thread_list = []
         start = 0
         end = -1
-        with open(tar_path, 'rb+') as f:
+        with open(tar_path, 'wb+') as f:
             fileno = f.fileno()
             while end < file_size - 1:
                 start = end + 1
@@ -132,7 +133,6 @@ class MulThreadDownload():
         thread_list = []
         for _, (url, tar_path) in enumerate(zip(url_list, tar_path_list)):
             # 请空并生成文件
-            print(url, tar_path)
             thread = SingleDownload(url, tar_path)
             thread.start()
             thread_list.append(thread)
@@ -187,19 +187,36 @@ class MulThreadPoolDownload():
             for _, (url, tar_path) in enumerate(zip(url_list, tar_path_list)):
                 to_do.append(executor.submit(self.parse, url, tar_path))
             # 获取Future的结果，futures.as_completed(to_do)的参数是Future列表，返回迭代器。只有当有Future运行结束后，才产出future
-            widgets = ['Progress: ', Percentage(), ' ', Bar('#'), ' ', Timer(), ' ', ETA(), ' ', FileTransferSpeed()]
-            bar = ProgressBar(widgets=widgets)
-            for future in bar(to_do):  # future变量表示已完成的Future对象，所以后续future.result()绝不会阻塞
+            for future in tqdm(to_do, desc='Processing'):
+                # future变量表示已完成的Future对象，所以后续future.result()绝不会阻塞
                 try:
                     result = future.result()
-                    print(result)
+                    print(f'Task result:{result}')
                 except Exception as e:
                     print(e)
+            # widgets = ['Progress: ', Percentage(), ' ', Bar('#'), ' ', Timer(), ' ', ETA(), ' ', FileTransferSpeed()]
+            # bar = ProgressBar(widgets=widgets)
+            # for future in bar(to_do):  # future变量表示已完成的Future对象，所以后续future.result()绝不会阻塞
+            #     try:
+            #         result = future.result()
+            #         print(result)
+            #     except Exception as e:
+            #         print(e)
 
 
 if __name__ == "__main__":
-    # for _, (url, tar_path) in enumerate(zip([1, 2, 3], ['a', 'b', 'c'])):
-    #     # 请空并生成文件
-    #     print(url, tar_path)
+    # 多线程下载一个文件
+    mtcd = MulThreadConcurrentDownload(4)
+    mtcd.download('https://picx.zhimg.com/v2-eaf6db06d882762435c54a9bb17be3c0_1440w.jpg', 'test')
+
+    # 单线程下载一个文件
+    sd = SingleDownload('https://picx.zhimg.com/v2-eaf6db06d882762435c54a9bb17be3c0_1440w.jpg', 'test')
+    # sd.run()
+
+    # 多线程下载多个文件
     mtd = MulThreadDownload()
-    mtd.download('https://github.com/jiagit/MultiDownload/archive/refs/heads/master.zip', 'test')
+    # mtd.download('https://picx.zhimg.com/v2-eaf6db06d882762435c54a9bb17be3c0_1440w.jpg', 'test')
+
+    # 线程池下载多个文件
+    mtpd = MulThreadPoolDownload()
+    # mtpd.download('https://picx.zhimg.com/v2-eaf6db06d882762435c54a9bb17be3c0_1440w.jpg', 'test')

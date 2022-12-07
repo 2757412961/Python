@@ -23,10 +23,7 @@ def traversal_date():
 
     for i in range((end - begin).days + 1):
         time = begin + datetime.timedelta(days=i)
-        year = time.strftime("%Y")
-        month = time.strftime("%m")
-        day = time.strftime("%d")
+        year = time.strftime("%Y")  # 2003
+        month = time.strftime("%m")  # 01
+        day = time.strftime("%d")  # 01
         print(time)
-
-
-
