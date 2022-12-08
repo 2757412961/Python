@@ -87,14 +87,32 @@ def data():
     begin = datetime.date(2003, 1, 1)
     end = datetime.date(2022, 1, 1)
     ##################
-    trainFolder = SensorDataset('/home/zjh/Ocean', begin, end, 'train')
-    trainLoader = torch.utils.data.DataLoader(trainFolder,
-                                              batch_size=args.batch_size,
-                                              shuffle=False)
-    validFolder = SensorDataset('/home/zjh/Ocean', begin, end, 'valid')
-    validLoader = torch.utils.data.DataLoader(validFolder,
-                                              batch_size=args.batch_size,
-                                              shuffle=False)
+    trainFolder = SensorDataset(
+        root='/home/zjh/Ocean',
+        start_date=begin,
+        end_date=end,
+        n_frames_input=args.frames_input,
+        n_frames_output=args.frames_output,
+        data_type='train'
+    )
+    trainLoader = torch.utils.data.DataLoader(
+        trainFolder,
+        batch_size=args.batch_size,
+        shuffle=False
+    )
+    validFolder = SensorDataset(
+        root='/home/zjh/Ocean',
+        start_date=begin,
+        end_date=end,
+        n_frames_input=args.frames_input,
+        n_frames_output=args.frames_output,
+        data_type='valid'
+    )
+    validLoader = torch.utils.data.DataLoader(
+        validFolder,
+        batch_size=args.batch_size,
+        shuffle=False
+    )
     return trainLoader, validLoader
 
 
@@ -120,7 +138,7 @@ def network():
     return net
 
 
-def train():
+def train(limit_epoch=3000):
     '''
     main function to run the training
     '''
@@ -167,7 +185,7 @@ def train():
         # train the model #
         ###################
         t = tqdm(trainLoader, leave=False, total=len(trainLoader))
-        for i, (idx, targetVar, inputVar, _, _) in enumerate(t):
+        for i, (idx, inputVar, targetVar) in enumerate(t):
             inputs = inputVar.to(device)  # B,S,C,H,W
             label = targetVar.to(device)  # B,S,C,H,W
             optimizer.zero_grad()
@@ -190,7 +208,7 @@ def train():
         with torch.no_grad():
             net.eval()
             t = tqdm(validLoader, leave=False, total=len(validLoader))
-            for i, (idx, targetVar, inputVar, _, _) in enumerate(t):
+            for i, (idx, inputVar, targetVar) in enumerate(t):
                 if i == 3000:
                     break
                 inputs = inputVar.to(device)
