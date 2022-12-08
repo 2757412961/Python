@@ -13,6 +13,8 @@ torchvision
 torchtext
 torchaudio
 torchdata
+torchstat
+torchsummary
 networkx
 PyHamcrest
 bs4

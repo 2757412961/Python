@@ -10,17 +10,17 @@
 '''
 
 import os
-
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 from encoder import Encoder
 from decoder import Decoder
 from model import ED
 from net_params import convlstm_encoder_params, convlstm_decoder_params, convgru_encoder_params, convgru_decoder_params
-from data.sensor import SensorDataset
+from data.sensorSERCNT import SensorDataset
 import torch
 from torch import nn
 from torch.optim import lr_scheduler
 import torch.optim as optim
+import torchstat
+import torchsummary
 import sys
 import time
 import datetime
@@ -29,6 +29,8 @@ from tqdm import tqdm
 import numpy as np
 from tensorboardX import SummaryWriter
 import argparse
+
+from utils import FileUtil, LogUtil
 
 # args
 parser = argparse.ArgumentParser()
@@ -46,17 +48,18 @@ parser.add_argument('--batch_size',
                     help='mini-batch size')
 parser.add_argument('-lr', default=1e-4, type=float, help='G learning rate')
 parser.add_argument('-frames_input',
-                    default=10,
+                    default=1,
                     type=int,
                     help='sum of input frames')
 parser.add_argument('-frames_output',
-                    default=10,
+                    default=1,
                     type=int,
                     help='sum of predict frames')
 parser.add_argument('-epochs', default=500, type=int, help='sum of epochs')
 args = parser.parse_args()
 
 # Setting
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 random_seed = 1996
 np.random.seed(random_seed)
 torch.manual_seed(random_seed)
@@ -68,6 +71,9 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
 # Global
+# 日志
+LOG_URL = FileUtil.generate_logfile_url("logs/convLstm.main.log")
+logger = LogUtil.Logger(LOG_URL)
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 TIMESTAMP = time.strftime('%Y-%m-%dT%H-%M-%S', time.localtime(time.time()))
 save_dir = './save_model/' + TIMESTAMP
@@ -79,6 +85,48 @@ if not os.path.isdir(run_dir):
 
 
 def data():
+    return dataSERCNT()
+
+
+def dataSENT():
+    """
+    Data
+    :return:
+    """
+    ##################
+    begin = datetime.date(2003, 1, 1)
+    end = datetime.date(2022, 1, 1)
+    ##################
+    trainFolder = SensorDataset(
+        root='/home/zjh/Ocean',
+        start_date=begin,
+        end_date=end,
+        n_frames_input=args.frames_input,
+        n_frames_output=args.frames_output,
+        data_type='train'
+    )
+    trainLoader = torch.utils.data.DataLoader(
+        trainFolder,
+        batch_size=args.batch_size,
+        shuffle=False
+    )
+    validFolder = SensorDataset(
+        root='/home/zjh/Ocean',
+        start_date=begin,
+        end_date=end,
+        n_frames_input=args.frames_input,
+        n_frames_output=args.frames_output,
+        data_type='valid'
+    )
+    validLoader = torch.utils.data.DataLoader(
+        validFolder,
+        batch_size=args.batch_size,
+        shuffle=False
+    )
+    return trainLoader, validLoader
+
+
+def dataSERCNT():
     """
     Data
     :return:
@@ -118,15 +166,15 @@ def data():
 
 def network():
     # net
-    if args.convlstm:
-        encoder_params = convlstm_encoder_params
-        decoder_params = convlstm_decoder_params
     if args.convgru:
         encoder_params = convgru_encoder_params
         decoder_params = convgru_decoder_params
+    elif args.convlstm:
+        encoder_params = convlstm_encoder_params
+        decoder_params = convlstm_decoder_params
     else:
-        encoder_params = convgru_encoder_params
-        decoder_params = convgru_decoder_params
+        encoder_params = convlstm_encoder_params
+        decoder_params = convlstm_decoder_params
 
     encoder = Encoder(encoder_params[0], encoder_params[1]).cuda()
     decoder = Decoder(decoder_params[0], decoder_params[1]).cuda()
@@ -135,20 +183,26 @@ def network():
     if torch.cuda.device_count() > 1:
         net = nn.DataParallel(net)
     net.to(device)
+    # torchsummary.summary(net, input_size=(10, 2, 4320, 8640), batch_size=4)
+    # # model.parameters()取出这个model所有的权重参数
+    # para = sum([np.prod(list(p.size())) for p in net.parameters()])
+    # # 下面的type_size是4，因为我们的参数是float32也就是4B，4个字节
+    # print('Model {} : params: {:4f}M'.format(net._get_name(), para * 4 / 1000 / 1000))
+    print(net)
     return net
 
 
-def train(limit_epoch=3000):
+def train():
     '''
     main function to run the training
     '''
 
     # SummaryWriter
     tb = SummaryWriter(run_dir)
-    # Data
-    trainLoader, validLoader = data()
     # Network
     net = network()
+    # Data
+    trainLoader, validLoader = data()
     # Loss Function
     lossfunction = nn.MSELoss().cuda()
     # Optimizer
@@ -186,6 +240,7 @@ def train(limit_epoch=3000):
         ###################
         t = tqdm(trainLoader, leave=False, total=len(trainLoader))
         for i, (idx, inputVar, targetVar) in enumerate(t):
+            # logger.info(f"{year}-{month}-{day}:classification:{k} in parameter:{v} start to train")
             inputs = inputVar.to(device)  # B,S,C,H,W
             label = targetVar.to(device)  # B,S,C,H,W
             optimizer.zero_grad()

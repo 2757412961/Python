@@ -60,12 +60,10 @@ PARAMETERS = {
 
 
 class SensorDataset(torch.utils.data.Dataset):
-    def __init__(self, root, start_date, end_date, row_id, col_id, n_frames_input, n_frames_output, data_type):
+    def __init__(self, root, start_date, end_date, n_frames_input, n_frames_output, data_type):
         self.root = root
         self.begin = start_date
         self.end = end_date
-        self.row = row_id * 432  # 切割成 10*20 个 432*432 图像的行
-        self.col = col_id * 432  # 切割成 10*20 个 432*432 图像的列
         self.n_frames_input = n_frames_input  # seq 长度
         self.n_frames_output = n_frames_output  # seq 长度
         self.n_frames_total = self.n_frames_input + self.n_frames_output
@@ -107,7 +105,7 @@ class SensorDataset(torch.utils.data.Dataset):
                     # H,W
                     im_gray = 0.299 * im[:, :, 0] + 0.587 * im[:, :, 1] + 0.114 * im[:, :, 2]
                     # H,W,C
-                    src_list.append(im_gray[self.row:self.row + 432][self.col:self.col + 432])
+                    src_list.append(im_gray)
                     # print(f'max:{np.max(im)},min:{np.min(im)},val:{np.sum(im > 0)}/{im.size}')
             # 输出
             tar_list = []
@@ -121,7 +119,7 @@ class SensorDataset(torch.utils.data.Dataset):
                     # H,W
                     im_gray = 0.299 * im[:, :, 0] + 0.587 * im[:, :, 1] + 0.114 * im[:, :, 2]
                     # C,H,W
-                    tar_list.append(im_gray[self.row:self.row + 432][self.col:self.col + 432])
+                    tar_list.append(im_gray)
 
             # input.append(np.concatenate(src_list, axis=2).transpose((2, 0, 1)))
             # output.append(np.concatenate(tar_list, axis=2).transpose((2, 0, 1)))
