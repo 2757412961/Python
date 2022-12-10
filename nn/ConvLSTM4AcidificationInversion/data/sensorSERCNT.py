@@ -30,37 +30,41 @@ logger = LogUtil.Logger(LOG_URL)
 PARAMETERS = {
     'FLH': ['ipar'],
     'KD': ['Kd_490'],
-    'PAR': ['par'],
-    'POC': ['poc'],
-    'PIC': ['pic'],
-    'SST': ['sst'],
-    'SST4': ['sst4'],
-    'IOP': [
-        'a_412',
-        'a_443',
-        'a_469',
-        'a_488',
-        'a_531',
-        'a_547',
-        'a_555',
-        'a_667',
-        'a_678'],
-    'RRS': [
-        'aot_869',
-        'Rrs_412',
-        'Rrs_443',
-        'Rrs_469',
-        'Rrs_488',
-        'Rrs_531',
-        'Rrs_547',
-        'Rrs_555',
-        'Rrs_667',
-        'Rrs_678']
+    # 'PAR': ['par'],
+    # 'POC': ['poc'],
+    # 'PIC': ['pic'],
+    # 'SST': ['sst'],
+    # 'SST4': ['sst4'],
+    # 'IOP': [
+    #     'a_412',
+    #     'a_443',
+    #     'a_469',
+    #     'a_488',
+    #     'a_531',
+    #     'a_547',
+    #     'a_555',
+    #     'a_667',
+    #     'a_678'],
+    # 'RRS': [
+    #     'aot_869',
+    #     'Rrs_412',
+    #     'Rrs_443',
+    #     'Rrs_469',
+    #     'Rrs_488',
+    #     'Rrs_531',
+    #     'Rrs_547',
+    #     'Rrs_555',
+    #     'Rrs_667',
+    #     'Rrs_678']
 }
 
 
 class SensorDataset(torch.utils.data.Dataset):
-    def __init__(self, root, start_date, end_date, row_id, col_id, n_frames_input, n_frames_output, data_type):
+    def __init__(self, root,
+                 start_date, end_date,
+                 row_id=0, col_id=0,
+                 n_frames_input=10, n_frames_output=10,
+                 data_type='train'):
         self.root = root
         self.begin = start_date
         self.end = end_date
@@ -107,7 +111,7 @@ class SensorDataset(torch.utils.data.Dataset):
                     # H,W
                     im_gray = 0.299 * im[:, :, 0] + 0.587 * im[:, :, 1] + 0.114 * im[:, :, 2]
                     # H,W,C
-                    src_list.append(im_gray[self.row:self.row + 432][self.col:self.col + 432])
+                    src_list.append(im_gray[self.row:self.row + 432, self.col:self.col + 432])
                     # print(f'max:{np.max(im)},min:{np.min(im)},val:{np.sum(im > 0)}/{im.size}')
             # 输出
             tar_list = []
@@ -121,7 +125,7 @@ class SensorDataset(torch.utils.data.Dataset):
                     # H,W
                     im_gray = 0.299 * im[:, :, 0] + 0.587 * im[:, :, 1] + 0.114 * im[:, :, 2]
                     # C,H,W
-                    tar_list.append(im_gray[self.row:self.row + 432][self.col:self.col + 432])
+                    tar_list.append(im_gray[self.row:self.row + 432, self.col:self.col + 432])
 
             # input.append(np.concatenate(src_list, axis=2).transpose((2, 0, 1)))
             # output.append(np.concatenate(tar_list, axis=2).transpose((2, 0, 1)))

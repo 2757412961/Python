@@ -28,11 +28,11 @@ class Encoder(nn.Module):
 
     def forward_by_stage(self, inputs, subnet, rnn):
         seq_number, batch_size, input_channel, height, width = inputs.size()
-        inputs = torch.reshape(inputs, (-1, input_channel, height, width))
+        inputs = torch.reshape(inputs, (-1, input_channel, height, width)) # S*B,C,W,H
         inputs = subnet(inputs)
-        inputs = torch.reshape(inputs, (seq_number, batch_size, inputs.size(1),
-                                        inputs.size(2), inputs.size(3)))
-        outputs_stage, state_stage = rnn(inputs, None)
+        # S,B,C,W,H
+        inputs = torch.reshape(inputs, (seq_number, batch_size, inputs.size(1), inputs.size(2), inputs.size(3)))
+        outputs_stage, state_stage = rnn(inputs, None, seq_number)
         return outputs_stage, state_stage
 
     def forward(self, inputs):
@@ -42,7 +42,8 @@ class Encoder(nn.Module):
         for i in range(1, self.blocks + 1):
             inputs, state_stage = self.forward_by_stage(
                 inputs, getattr(self, 'stage' + str(i)),
-                getattr(self, 'rnn' + str(i)))
+                getattr(self, 'rnn' + str(i))
+            )
             hidden_states.append(state_stage)
         return tuple(hidden_states)
 

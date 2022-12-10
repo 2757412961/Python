@@ -43,38 +43,39 @@ parser.add_argument('-cgru',
                     help='use convgru as base cell',
                     action='store_true')
 parser.add_argument('--batch_size',
-                    default=4,
+                    default=1,
                     type=int,
                     help='mini-batch size')
 parser.add_argument('-lr', default=1e-4, type=float, help='G learning rate')
 parser.add_argument('-frames_input',
-                    default=1,
+                    default=8,
                     type=int,
                     help='sum of input frames')
 parser.add_argument('-frames_output',
-                    default=1,
+                    default=8,
                     type=int,
                     help='sum of predict frames')
 parser.add_argument('-epochs', default=500, type=int, help='sum of epochs')
 args = parser.parse_args()
 
 # Setting
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 random_seed = 1996
 np.random.seed(random_seed)
 torch.manual_seed(random_seed)
-if torch.cuda.device_count() > 1:
-    torch.cuda.manual_seed_all(random_seed)
-else:
-    torch.cuda.manual_seed(random_seed)
+# if torch.cuda.device_count() > 1:
+#     torch.cuda.manual_seed_all(random_seed)
+# else:
+#     torch.cuda.manual_seed(random_seed)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
 # Global
 # 日志
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 LOG_URL = FileUtil.generate_logfile_url("logs/convLstm.main.log")
 logger = LogUtil.Logger(LOG_URL)
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 TIMESTAMP = time.strftime('%Y-%m-%dT%H-%M-%S', time.localtime(time.time()))
 save_dir = './save_model/' + TIMESTAMP
 run_dir = './runs/' + TIMESTAMP
@@ -139,6 +140,8 @@ def dataSERCNT():
         root='/home/zjh/Ocean',
         start_date=begin,
         end_date=end,
+        row_id=0,
+        col_id=0,
         n_frames_input=args.frames_input,
         n_frames_output=args.frames_output,
         data_type='train'
@@ -152,6 +155,8 @@ def dataSERCNT():
         root='/home/zjh/Ocean',
         start_date=begin,
         end_date=end,
+        row_id=0,
+        col_id=0,
         n_frames_input=args.frames_input,
         n_frames_output=args.frames_output,
         data_type='valid'
@@ -177,17 +182,17 @@ def network():
         decoder_params = convlstm_decoder_params
 
     encoder = Encoder(encoder_params[0], encoder_params[1]).cuda()
-    decoder = Decoder(decoder_params[0], decoder_params[1]).cuda()
+    decoder = Decoder(decoder_params[0], decoder_params[1], seq_len=args.frames_input).cuda()
 
     net = ED(encoder, decoder)
     if torch.cuda.device_count() > 1:
         net = nn.DataParallel(net)
     net.to(device)
-    # torchsummary.summary(net, input_size=(10, 2, 4320, 8640), batch_size=4)
-    # # model.parameters()取出这个model所有的权重参数
-    # para = sum([np.prod(list(p.size())) for p in net.parameters()])
-    # # 下面的type_size是4，因为我们的参数是float32也就是4B，4个字节
-    # print('Model {} : params: {:4f}M'.format(net._get_name(), para * 4 / 1000 / 1000))
+    ##################
+    # OUTPUT NETWORK #
+    ##################
+    out = net(torch.randn((1, 8, 2, 432, 432)).to(device))
+    # torchsummary.summary(net, input_size=[(8, 2, 432, 432)], batch_size=args.batch_size)
     print(net)
     return net
 
