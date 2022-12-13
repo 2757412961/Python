@@ -14,7 +14,8 @@ from utils.MultiDownload import MulThreadDownload, MulThreadConcurrentDownload, 
 LOG_URL = FileUtil.generate_logfile_url("logs/modis.l3.log")
 logger = LogUtil.Logger(LOG_URL)
 # 常量
-SAVE_DIR = 'F:\Ocean'
+# SAVE_DIR = 'F:/Ocean'
+SAVE_DIR = '/home/zjh/Ocean/'
 
 
 def get_web_url_png(classification, parameter, year, month, day):
@@ -25,8 +26,8 @@ def get_web_url_png(classification, parameter, year, month, day):
 
 def get_file_path_png(classification, parameter, year, month, day):
     # https://oceancolor.gsfc.nasa.gov/showimages/MODISA/IMAGES/CHL/L3/2002/0716/AQUA_MODIS.20020716.L3m.DAY.CHL.chlor_a.4km.nc.png
-    return f'{SAVE_DIR}\MODIS_AQUA_{classification}_{parameter}' \
-           f'\AQUA_MODIS.{year}{month}{day}.L3m.DAY.{classification}.{parameter}.4km.nc.png'
+    return f'{SAVE_DIR}/MODIS_AQUA_{classification}_{parameter}' \
+           f'/AQUA_MODIS.{year}{month}{day}.L3m.DAY.{classification}.{parameter}.4km.nc.png'
 
 
 def get_web_url(classification, parameter, year, month, day):
@@ -37,8 +38,8 @@ def get_web_url(classification, parameter, year, month, day):
 
 def get_file_path(classification, parameter, year, month, day):
     # https://oceandata.sci.gsfc.nasa.gov/cgi/getfile/AQUA_MODIS.20020719.L3m.DAY.CHL.chlor_a.4km.nc
-    return f'{SAVE_DIR}\MODIS_AQUA_{classification}_{parameter}' \
-           f'\AQUA_MODIS.{year}{month}{day}.L3m.DAY.{classification}.{parameter}.4km.nc'
+    return f'{SAVE_DIR}/MODIS_AQUA_{classification}_{parameter}' \
+           f'/AQUA_MODIS.{year}{month}{day}.L3m.DAY.{classification}.{parameter}.4km.nc'
 
 
 # refer to web url
