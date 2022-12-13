@@ -6,4 +6,4 @@
 # @Desc  : Configuration
 
 # PROJECT_PATH = 'E:\\Github\\Python'
-PROJECT_PATH = '/tmp/pycharm_project_119'
+PROJECT_PATH = '/tmp/pycharm_project_132'

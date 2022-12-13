@@ -35,12 +35,12 @@ convlstm_decoder_params = [
 # in_channels=v[0], out_channels=v[1], kernel_size=v[2], stride=v[3], padding=v[4]
 convlstm_encoder_params = [
     [
-        OrderedDict({'conv1_leaky_1': [2, 16, 3, 1, 1]}),
-        OrderedDict({'conv2_leaky_1': [32, 32, 3, 2, 1]}),
+        OrderedDict({'conv1_leaky_1': [27, 16, 3, 1, 1]}),
+        OrderedDict({'conv2_leaky_1': [24, 24, 3, 2, 1]}),
     ],
     [
-        CLSTM_cell(shape=(432, 432), input_channels=16, filter_size=5, num_features=32),
-        CLSTM_cell(shape=(216, 216), input_channels=32, filter_size=5, num_features=32),
+        CLSTM_cell(shape=(432, 432), input_channels=16, filter_size=5, num_features=24),
+        CLSTM_cell(shape=(216, 216), input_channels=24, filter_size=5, num_features=32),
     ]
 ]
 
@@ -48,13 +48,13 @@ convlstm_decoder_params = [
     [
         OrderedDict({'deconv2_leaky_1': [32, 32, 4, 2, 1]}),
         OrderedDict({
-            'conv3_leaky_1': [32, 16, 3, 1, 1],
+            'conv3_leaky_1': [24, 16, 3, 1, 1],
             'conv4_leaky_1': [16, 1, 1, 1, 0]
         }),
     ],
     [
         CLSTM_cell(shape=(216, 216), input_channels=32, filter_size=5, num_features=32),
-        CLSTM_cell(shape=(432, 432), input_channels=32, filter_size=5, num_features=32),
+        CLSTM_cell(shape=(432, 432), input_channels=32, filter_size=5, num_features=24),
     ]
 ]
 

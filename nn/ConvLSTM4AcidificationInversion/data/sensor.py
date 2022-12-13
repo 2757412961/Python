@@ -3,7 +3,7 @@
 # @Author: Zjh
 # @Date  : 2022/12/6
 # @Update: 2022/12/6
-# @Desc  : 遥感卫星数据集，主要包含数据有：FLH叶绿素、KD反射系数、POC、PIC有机碳、SST温度、IOP吸收系数、RRS遥感反射率
+# @Desc  : 遥感卫星数据集，主要包含数据有：CHL叶绿素、KD反射系数、POC、PIC有机碳、SST温度、IOP吸收系数、RRS遥感反射率
 
 import os
 import math
@@ -28,6 +28,7 @@ from utils import FileUtil, LogUtil
 LOG_URL = FileUtil.generate_logfile_url("logs/convLstm.sensor.log")
 logger = LogUtil.Logger(LOG_URL)
 PARAMETERS = {
+    'CHL': ['chlor_a'],
     'FLH': ['ipar'],
     'KD': ['Kd_490'],
     'PAR': ['par'],
@@ -102,8 +103,8 @@ class SensorDataset(torch.utils.data.Dataset):
             src_list = []
             for k, vs in PARAMETERS.items():
                 for v in vs:
-                    # logger.info(f"{year}-{month}-{day}:classification:{k} in parameter:{v} start to train")
                     file_path = self.get_file_path_png(k, v, year, month, day)
+                    logger.info(f"{year}-{month}-{day}:classification:{k} in parameter{v}:file with {file_path}")
                     # 读取图像
                     # H,W,C
                     im = plt.imread(file_path)
@@ -145,42 +146,25 @@ class SensorDataset(torch.utils.data.Dataset):
 
 
 if __name__ == '__main__':
+    def readSensorDataset(data_type):
+        begin = datetime.date(2003, 1, 1)
+        end = datetime.date(2022, 1, 1)
+        sensor = SensorDataset(
+            root='/home/zjh/Ocean',
+            start_date=begin,
+            end_date=end,
+            n_frames_input=1,
+            n_frames_output=1,
+            data_type='train'
+        )
+        print(sensor.begin, sensor.end)
+        print(len(sensor))
+        for i in range(len(sensor)):
+            print(sensor[i][1].size())
+
+
     ##################
-    begin = datetime.date(2003, 1, 1)
-    end = datetime.date(2022, 1, 1)
+    readSensorDataset('train')
+    readSensorDataset('valid')
+    readSensorDataset('test')
 
-    train = SensorDataset(
-        root='/home/zjh/Ocean',
-        start_date=begin,
-        end_date=end,
-        n_frames_input=1,
-        n_frames_output=1,
-        data_type='train'
-    )
-    print(train.begin, train.end)
-    print(len(train))
-    print(train[523][1].size())
-
-    valid = SensorDataset(
-        root='/home/zjh/Ocean',
-        start_date=begin,
-        end_date=end,
-        n_frames_input=10,
-        n_frames_output=10,
-        data_type='valid'
-    )
-    print(valid.begin, valid.end)
-    print(len(valid))
-    print(valid[523][1].size())
-
-    test = SensorDataset(
-        root='/home/zjh/Ocean',
-        start_date=begin,
-        end_date=end,
-        n_frames_input=10,
-        n_frames_output=10,
-        data_type='test'
-    )
-    print(test.begin, test.end)
-    print(len(test))
-    print(test[523][1].size())

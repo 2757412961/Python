@@ -89,4 +89,5 @@ def generate_logfile_url(filename, base_dir=PROJECT_ABS_PATH):
     file_path = os.path.join(base_dir, filename)
     # 检查
     check_generate_files(file_path)
+    print(f'logs file path: {file_path}')
     return file_path

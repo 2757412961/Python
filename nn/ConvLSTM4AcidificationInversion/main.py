@@ -191,7 +191,7 @@ def network():
     ##################
     # OUTPUT NETWORK #
     ##################
-    out = net(torch.randn((1, 8, 2, 432, 432)).to(device))
+    # out = net(torch.randn((1, 8, 2, 432, 432)).to(device))
     # torchsummary.summary(net, input_size=[(8, 2, 432, 432)], batch_size=args.batch_size)
     print(net)
     return net
