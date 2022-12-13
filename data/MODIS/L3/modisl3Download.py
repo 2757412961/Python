@@ -15,7 +15,7 @@ LOG_URL = FileUtil.generate_logfile_url("logs/modis.l3.log")
 logger = LogUtil.Logger(LOG_URL)
 # 常量
 # SAVE_DIR = 'F:/Ocean'
-SAVE_DIR = '/home/zjh/Ocean/'
+SAVE_DIR = '/home/zjh/Ocean'
 
 
 def get_web_url_png(classification, parameter, year, month, day):
