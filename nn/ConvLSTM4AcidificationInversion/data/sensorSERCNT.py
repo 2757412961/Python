@@ -147,7 +147,8 @@ class SensorDataset(torch.utils.data.Dataset):
 
 if __name__ == '__main__':
     def readSensorDataset(data_type):
-        begin = datetime.date(2003, 1, 1)
+        # begin = datetime.date(2003, 1, 1)
+        begin = datetime.date(2010, 10, 1)
         end = datetime.date(2022, 1, 1)
         sensor = SensorDataset(
             root='/home/zjh/Ocean',
@@ -162,7 +163,7 @@ if __name__ == '__main__':
         for i in range(len(sensor)):
             print(sensor[i][1].size())
     ##################
-    im = plt.imread('/home/zjh/Ocean/MODIS_AQUA_RRS_Rrs_412/AQUA_MODIS.20030321.L3m.DAY.RRS.Rrs_412.4km.nc.png')
+    im = plt.imread('/home/zjh/Ocean/MODIS_AQUA_IOP_a_667/AQUA_MODIS.20100214.L3m.DAY.IOP.a_667.4km.nc.png')
 
     readSensorDataset('train')
     readSensorDataset('valid')

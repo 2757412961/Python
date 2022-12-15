@@ -9,6 +9,7 @@ plt.rcParams['font.sans-serif'] = ['SimHei']  # 显示中文标签
 plt.rcParams['axes.unicode_minus'] = False  # 这两行需要手动设置
 
 '''
+https://blog.csdn.net/weixin_43646592/article/details/113427937
 NetCDF(network Common Data Form)网络通用数据格式是一种面向数组型并适于网络共享的数据的描述和编码标准。
 目前，NetCDF广泛应用于大气科学、水文、海洋学、环境模拟、地球物理等诸多领域。用户可以借助多种方式方便地管理和操作 NetCDF 数据集。
 '''
