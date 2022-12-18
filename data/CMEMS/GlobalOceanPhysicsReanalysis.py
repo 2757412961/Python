@@ -49,7 +49,8 @@ if __name__ == '__main__':
               f' --variable sithick'
               f' --variable zos'
               f' --variable mlotst'
-              f' --out-dir "F:\Ocean\CMEMS\Global Ocean Biogeochemistry Analysis and Forecast"'
+              f' --out-dir "F:\Ocean\CMEMS\Global Ocean Physics Reanalysis"'
               f' --out-name MULTIOBS_GLO_BIO_CARBON_SURFACE_REP_{this_year}_{this_month}.nc'
               f' --user aturing1'
               f' --pwd MoYan0000')
+
