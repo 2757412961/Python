@@ -8,7 +8,7 @@
 import os
 import config
 
-PROJECT_ABS_PATH = os.path.abspath(config.PROJECT_PATH)
+PROJECT_ABS_PATH = os.path.abspath(config.PROJECT_ROOT)
 
 '''
 1、获取工作目录

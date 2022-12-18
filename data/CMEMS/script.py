@@ -9,6 +9,7 @@
 
 import datetime
 import pandas as pd
+import config
 
 """
 Sample
@@ -49,7 +50,7 @@ if __name__ == '__main__':
           f' --variable ph'
           f' --variable talk'
           f' --variable spco2'
-          f' --out-dir "F:\Ocean\CMEMS\Global Ocean Biogeochemistry Analysis and Forecast"'
+          f' --out-dir "{config.DATA_ROOT}/CMEMS/Global Ocean Physics Reanalysis"'
           f' --out-name MULTIOBS_GLO_BIO_CARBON_SURFACE_REP_015_008-2021-01.nc'
           f' --user aturing1'
           f' --pwd MoYan0000')

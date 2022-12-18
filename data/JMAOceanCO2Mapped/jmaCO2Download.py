@@ -8,6 +8,7 @@
 from bs4 import BeautifulSoup
 import requests
 from urllib.parse import urljoin
+import config
 from utils import HeaderUtil
 from utils import LogUtil
 from utils import FileUtil
@@ -19,7 +20,7 @@ logger = LogUtil.Logger(LOG_URL)
 # 常量
 URLS_FILE = 'urls.txt'
 BASE_URL = 'https://www.data.jma.go.jp/gmd/kaiyou/data/english/co2_flux'
-SAVE_DIR = 'F:\Ocean\JMA_Ocean_CO2_Map'
+SAVE_DIR = f'{config.DATA_ROOT}/JMA_Ocean_CO2_Map'
 
 
 def print_url_lst():

@@ -22,6 +22,7 @@
 
 import datetime
 import pandas as pd
+import config
 
 if __name__ == '__main__':
     begin = datetime.date(2003, 1, 1)
@@ -49,7 +50,7 @@ if __name__ == '__main__':
               f' --variable sithick'
               f' --variable zos'
               f' --variable mlotst'
-              f' --out-dir "F:\Ocean\CMEMS\Global Ocean Physics Reanalysis"'
+              f' --out-dir "{config.DATA_ROOT}/CMEMS/Global Ocean Physics Reanalysis"'
               f' --out-name MULTIOBS_GLO_BIO_CARBON_SURFACE_REP_{this_year}_{this_month}.nc'
               f' --user aturing1'
               f' --pwd MoYan0000')

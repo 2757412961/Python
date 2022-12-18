@@ -7,6 +7,7 @@
 
 from bs4 import BeautifulSoup
 import requests
+import config
 from utils import HeaderUtil
 from utils import LogUtil
 from utils import FileUtil
@@ -18,8 +19,7 @@ logger = LogUtil.Logger(LOG_URL)
 # 常量
 URLS_FILE = 'urls.npy'
 BASE_URL = 'https://data.remss.com'
-# SAVE_DIR = 'F:\Ocean\CCMP_V3'
-SAVE_DIR = '/home/zjh/Ocean/CCMP_V3'
+SAVE_DIR = f'{config.DATA_ROOT}/CCMP_V3'
 
 
 def saveList(urls, filename):

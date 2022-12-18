@@ -7,6 +7,7 @@
 
 import datetime
 import pandas as pd
+import config
 from utils import LogUtil
 from utils import FileUtil
 from utils.MultiDownload import MulThreadDownload, MulThreadConcurrentDownload, MulThreadPoolDownload
@@ -15,8 +16,6 @@ from utils.MultiDownload import MulThreadDownload, MulThreadConcurrentDownload, 
 LOG_URL = FileUtil.generate_logfile_url("logs/modis.l3.download.log")
 logger = LogUtil.Logger(LOG_URL)
 # 常量
-# SAVE_DIR = 'F:/Ocean'
-SAVE_DIR = '/home/zjh/Ocean'
 
 
 # Modis L3 png 每日数据Url和文件Path
@@ -28,7 +27,7 @@ def get_web_url_daily_png(classification, parameter, year, month, day):
 
 def get_file_path_daily_png(classification, parameter, year, month, day):
     # {SAVE_DIR}/MODIS_AQUA_CHL_chlor_a/IMAGES/AQUA_MODIS.20020716.L3m.DAY.CHL.chlor_a.4km.nc.png
-    return f'{SAVE_DIR}/MODIS_AQUA_{classification}_{parameter}' \
+    return f'{config.DATA_ROOT}/MODIS_AQUA_{classification}_{parameter}' \
            f'/AQUA_MODIS.{year}{month}{day}.L3m.DAY.{classification}.{parameter}.4km.nc.png'
 
 
@@ -41,7 +40,7 @@ def get_web_url_monthly_png(classification, parameter, year, month, day, start_d
 
 def get_file_path_monthly_png(classification, parameter, year, month, day, start_date, end_date):
     # {SAVE_DIR}/MODIS_AQUA_POC_poc/IMAGES/AQUA_MODIS.200307.L3m.MO.POC.poc.4km.nc.png
-    return f'{SAVE_DIR}/MODIS_AQUA_{classification}_{parameter}' \
+    return f'{config.DATA_ROOT}/MODIS_AQUA_{classification}_{parameter}' \
            f'/AQUA_MODIS.{year}{month}.L3m.MO.{classification}.{parameter}.4km.nc.png'
 
 
@@ -54,7 +53,7 @@ def get_web_url_daily_nc(classification, parameter, year, month, day):
 
 def get_file_path_daily_nc(classification, parameter, year, month, day):
     # https://oceandata.sci.gsfc.nasa.gov/cgi/getfile/AQUA_MODIS.20020719.L3m.DAY.CHL.chlor_a.4km.nc
-    return f'{SAVE_DIR}/MODIS_AQUA_{classification}_{parameter}' \
+    return f'{config.DATA_ROOT}/MODIS_AQUA_{classification}_{parameter}' \
            f'/AQUA_MODIS.{year}{month}{day}.L3m.DAY.{classification}.{parameter}.4km.nc'
 
 

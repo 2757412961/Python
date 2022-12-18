@@ -5,5 +5,7 @@
 # @Update: 2022/11/23
 # @Desc  : Configuration
 
-# PROJECT_PATH = 'E:\\Github\\Python'
-PROJECT_PATH = '/tmp/pycharm_project_132'
+PROJECT_ROOT = 'E:/Github/Python'
+DATA_ROOT = 'F:/Ocean'
+# PROJECT_ROOT = '/tmp/pycharm_project_132'
+# DATA_ROOT = = '/home/zjh/Ocean'
