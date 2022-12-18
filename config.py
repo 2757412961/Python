@@ -5,7 +5,20 @@
 # @Update: 2022/11/23
 # @Desc  : Configuration
 
-PROJECT_ROOT = 'E:/Github/Python'
-DATA_ROOT = 'F:/Ocean'
-# PROJECT_ROOT = '/tmp/pycharm_project_132'
-# DATA_ROOT = = '/home/zjh/Ocean'
+
+def local():
+    global PROJECT_ROOT, DATA_ROOT
+    PROJECT_ROOT = 'E:/Github/Python'
+    DATA_ROOT = 'F:/Ocean'
+
+
+def linux():
+    global PROJECT_ROOT, DATA_ROOT
+    PROJECT_ROOT = '/tmp/pycharm_project_132'
+    DATA_ROOT = '/home/zjh/Ocean'
+
+
+#######
+local()
+# linux()
+#######
