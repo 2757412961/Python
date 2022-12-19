@@ -1,0 +1,5 @@
+## 创建数据库
+# 开放端口：5433
+# 密码：123456
+docker run --name postgres4OA -d -p 5433:5432 -e POSTGRES_PASSWORD=123456 postgres
+

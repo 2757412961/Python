@@ -26,6 +26,6 @@ def linux():
 
 #######
 # local()
-temp()
-# linux()
+# temp()
+linux()
 #######
