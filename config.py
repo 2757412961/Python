@@ -12,6 +12,12 @@ def local():
     DATA_ROOT = 'F:/Ocean'
 
 
+def temp():
+    global PROJECT_ROOT, DATA_ROOT
+    PROJECT_ROOT = 'E:/Github/Python'
+    DATA_ROOT = 'F:/TEMP'
+
+
 def linux():
     global PROJECT_ROOT, DATA_ROOT
     PROJECT_ROOT = '/tmp/pycharm_project_132'
@@ -19,6 +25,7 @@ def linux():
 
 
 #######
-local()
+# local()
+temp()
 # linux()
 #######
