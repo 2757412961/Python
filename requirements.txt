@@ -66,3 +66,10 @@ netCDF4==1.5.8
 # Copernicus Marine Data Store
 maskpass
 motuclient
+
+# Database
+asyncpg
+asyncio
+
+# PyCO2SYS
+PyCO2SYS
