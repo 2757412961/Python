@@ -30,7 +30,8 @@ DS1 = ENSODataset("OBSVal")
 DL = DataLoader(ConcatDataset((DS, DS1)), batch_size=400, shuffle=True)
 
 # 开始训练与验证
-TFV.trainFunc(Net, DL, 5, saveName="Exp2", optim=torch.optim.Adam(Net.parameters()))
+TFV.trainFunc(Net, DL, 5, saveName="Exp2", optim=torch.optim.Adam(Net.parameters()),
+              val_data=iter(DataLoader(ENSODataset(type_="OBSVal"), batch_size=1000, shuffle=False)))
 
 # 如果需要迁移学习 ， 可以 将Dataset分开加载
 # 画出结果
