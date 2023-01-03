@@ -20,6 +20,7 @@ OBSTrainSSTALoc = r'/home/zjh/cnm/soda/SODA_sst_a.nc'
 OBSTrainSSHALoc = r'/home/zjh/cnm/soda/SODA_t300_a.nc'
 OBSTrainNinoLoc = r'/home/zjh/cnm/soda/nino34.nc'
 
+
 # OBSValSSTALoc = "../ValidationData/ersstv5ssta.nc"
 # OBSValSSHALoc = "../ValidationData/GODASssha.nc"
 # OBSValNinoLoc = "../ValidationData/ersstv5Nino34.nc"
@@ -83,8 +84,7 @@ class ENSODataset(Dataset):
         """
         DataX1 = np.array(self.IniSSTA[index:index + 3])
         DataX2 = np.array(self.IniSSHA[index:index + 3])
-        DataX = np.concatenate([DataX1, DataX2], axis=0)
-        DataX = torch.tensor(DataX, dtype=torch.float32)
+        DataX = torch.stack((torch.tensor(DataX1, dtype=torch.float32), torch.tensor(DataX2, dtype=torch.float32)), 1)
         DataY = np.array(self.IniNino[index + 3:index + 3 + 23])
         DataY = torch.tensor(DataY, dtype=torch.float32)
         return DataX, DataY

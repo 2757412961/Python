@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 FuncPlot.py
 函数来plot神经网络训练过程和验证集技巧
@@ -12,7 +13,7 @@ def trainPlot(FName):
     Dic = pickle.load(File)
     fig = plt.figure(figsize=(10, 9))
     ax1 = fig.add_subplot(211)
-    ax1.plot(np.arange(1, 24), Dic["ACCList"], "-o", label="CNN")
+    ax1.plot(np.arange(1, 24), Dic["ACCList"], "-o", label="ConvLSTM")
     ax1.hlines(0.5, 0.5, 23.5)
     ax1.set_xlim(0.5, 23.5)
     ax1.set_ylim(0, 1)
@@ -26,7 +27,7 @@ def trainPlot(FName):
     ax2.plot(Dic["lossList"], label="Train Loss")
     ax2.hlines(Dic["LossVal"], 0, len(Dic["lossList"]), label="Val Loss", colors="red")
     ax2.set_ylabel("Loss")
-    ax2.set_xlabel("batch_number")
+    ax2.set_xlabel("epoch")
     plt.legend()
     plt.savefig("./TrainRes/%s.png" % FName, dpi=300)
     plt.show()

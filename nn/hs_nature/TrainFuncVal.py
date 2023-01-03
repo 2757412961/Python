@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 TrainFuncVal.py
 此脚本写用于训练、验证的函数
@@ -93,9 +94,14 @@ def trainFunc(Network, DataL, epochs, optim, saveName, criterion=torch.nn.MSELos
     # 生成并保存日志
     if gen_log is True:
         # 训练日志包括 名称、日期、epoch数、losslist、验证集loss、相关系数、P值list
-        SaveDict = {"trainName": saveName, "train_time": time_str, "epoch_num": epochs, "lossList": lossList,
+        SaveDict = {"trainName": saveName,
+                    "train_time": time_str,
+                    "epoch_num": epochs,
+                    "lossList": lossList,
                     "LossVal": LossVal,
-                    "ACCList": ACCList, "Plist": PList}
+                    "ACCList": ACCList,
+                    "Plist": PList}
+        print(SaveDict)
         saveF = open("TrainRes/%s.pickle" % saveName, "wb")
         pickle.dump(SaveDict, saveF)
         saveF.close()
