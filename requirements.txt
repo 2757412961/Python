@@ -73,3 +73,6 @@ asyncio
 
 # PyCO2SYS
 PyCO2SYS
+
+# ERA5
+cdsapi

@@ -5,6 +5,12 @@
 # @Update: 2022/11/23
 # @Desc  : Configuration
 
+'''
+Global Variables
+'''
+PROJECT_ROOT = ''
+DATA_ROOT = ''
+
 
 def local():
     global PROJECT_ROOT, DATA_ROOT
