@@ -19,6 +19,8 @@ if __name__ == '__main__':
         month = time.strftime("%m")  # 01
         day = time.strftime("%d")  # 01
         print(time)
+        if os.path.exists(f'{base_dir}/ERA5_hourly_{year}{month}{day}.nc'):
+            continue
         c.retrieve(
             'reanalysis-era5-single-levels',
             {
