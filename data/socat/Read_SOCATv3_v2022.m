@@ -355,6 +355,33 @@ clear htt wdt hdr2s cfdlg mmm th
 clear hdr3s dfdlg bd df bc cf msg v cruiseflags delim ind5 ncolmax
 
 %--------------------------------------------------------------------------
+% code example to export data
+% to run code, highlight lines in between the "if" statement 
+%--------------------------------------------------------------------------
+output=0;
+if runcode==1
+    % 创建一个csv文件
+    fid = fopen('SOCAT.csv', 'w+', 'n', 'utf8');
+    % 创建标题 2+6+5+4=17
+    fprintf(fid, '%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n', ...
+                "expocode", "qcflag", ...
+                "year", "month", "day", "hh", "mm", "ss", ...
+                "lon", "lat", "depth", "sss", "sst", ...
+                "pco2", "fco2", "fco2rec", "fco2recsrc");
+    
+    for i=1:length(sal)
+        % 一行3个数据，用逗号分隔；每行结束后加上\n换行
+        fprintf(fid, '%s,%s,%d,%d,%d,%d,%d,%d,%f,%f,%d,%f,%f,%f,%f,%f,%d\n', ...
+                cell2mat(Expocode(i)), cell2mat(QC_Flag(i)), ...
+                yr(i), mon(i), day(i), hh(i), mm(i), ss(i), ...
+                longitude(i), latitude(i), sample_depth(i), sal(i), SST(i), ...
+                pCO2water_equ_wet(i), fCO2water_equ_wet(i), fCO2rec(i), fCO2rec_src(i));
+    end
+    status = fclose (fid) %关闭句柄为fid的文件
+end
+
+
+%--------------------------------------------------------------------------
 % code example to plot a variable (plotv) on a map
 % to run code, highlight lines in between the "if" statement 
 % (lines 385 to 406), right click and select "Evaluate Selection" 
