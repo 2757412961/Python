@@ -13,7 +13,6 @@ Iterable: any object that supports iteration
 Start: the index value from which the counter is to be started, by default it is 0
 '''
 
-
 # Python program to illustrate
 if __name__ == '__main__':
     # enumerate function
@@ -26,6 +25,8 @@ if __name__ == '__main__':
 
     print("Return type:", type(obj1))
     print(list(enumerate(l1)))
+    for i, l in enumerate(l1):
+        print(i, l)
 
     # changing start index to 2 from 0
     print(list(enumerate(s1, 2)))

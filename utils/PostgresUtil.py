@@ -9,6 +9,11 @@
 https://www.programminghunter.com/article/60711104018/
 """
 
+import psycopg2
+
+'''
+psycopg2 是一个通过python连接postgreSQL的库, 不要被它的名称蒙蔽了，你可能发现它的版本是psyconpg2.7.*, 以为它只能在python2上使用，实际上，这只是一个巧合而已，它也可以在python3上使用。
+'''
 import asyncio
 import asyncpg
 
@@ -17,6 +22,115 @@ import asyncpg
 除了增删改之外，像什么建表语句、修改表字段、类型等等，都使用execute，执行多条的话使用executemany。
 至于fetch和fetchrow是专门针对select查询使用的，还有execute和executemany针对的是select语句之外的其它语句
 '''
+
+'''
+1 psycopg2.connect(database="testdb", user="postgres", password="cohondob", host="127.0.0.1", port="5432")
+　　这个API打开一个连接到PostgreSQL数据库。如果成功打开数据库时，它返回一个连接对象。
+2 connection.cursor()
+　　该程序创建一个光标将用于整个数据库使用Python编程。
+3 cursor.execute(sql [, optional parameters])
+　　此例程执行SQL语句。可被参数化的SQL语句（即占位符，而不是SQL文字）。 psycopg2的模块支持占位符用％s标志
+　　例如：cursor.execute("insert into people values (%s, %s)", (who, age))
+4 curosr.executemany(sql, seq_of_parameters)
+　　该程序执行SQL命令对所有参数序列或序列中的sql映射。
+5 curosr.callproc(procname[, parameters])
+　　这个程序执行的存储数据库程序给定的名称。该程序预计为每一个参数，参数的顺序必须包含一个条目。
+6 cursor.rowcount
+　　这个只读属性，它返回数据库中的行的总数已修改，插入或删除最后 execute*().
+7 connection.commit()
+　　此方法提交当前事务。如果不调用这个方法，无论做了什么修改，自从上次调用commit()是不可见的，从其他的数据库连接。
+8 connection.rollback()
+　　此方法会回滚任何更改数据库自上次调用commit（）方法。
+9 connection.close()
+　　此方法关闭数据库连接。请注意，这并不自动调用commit（）。如果你只是关闭数据库连接而不调用commit（）方法首先，那么所有更改将会丢失！
+10 cursor.fetchone()
+　　这种方法提取的查询结果集的下一行，返回一个序列，或者无当没有更多的数据是可用的。
+11 cursor.fetchmany([size=cursor.arraysize])
+　　这个例程中取出下一个组的查询结果的行数，返回一个列表。当没有找到记录，返回空列表。该方法试图获取尽可能多的行所显示的大小参数。
+12 cursor.fetchall()
+　　这个例程获取所有查询结果（剩余）行，返回一个列表。空行时则返回空列表。
+'''
+class PostgresqlDB(object):
+    def __init__(self, host, port, user, password, database):
+        self.host = host
+        self.port = port
+        self.user = user
+        self.password = password
+        self.database = database
+
+    def search(self, sql):
+        """
+        Args:
+            sql: 查询语句，必须是SELECT
+
+        Returns:
+        """
+        try:
+            # （一）连接数据库：
+            conn = psycopg2.connect(host=self.host, port=self.port,
+                                    user=self.user, password=self.password, database=self.database)
+            # （二）创建光标：
+            cur = conn.cursor()
+            # （三）执行SQL指令：
+            cur.execute(sql)
+            # （四）获取所有结果（比如使用了select语句）：
+            results = cur.fetchall()
+            # （五）提交当前事务：
+            # （六）关闭光标 & 关闭数据库连接
+            cur.close()
+            conn.close()
+            return results
+        except IOError as e:
+            print(e)
+
+    def execute(self, sql):
+        """
+        Args:
+            sql: 执行语句，不能是SELECT
+
+        Returns:
+        """
+        try:
+            # （一）连接数据库：
+            conn = psycopg2.connect(host=self.host, port=self.port,
+                                    user=self.user, password=self.password, database=self.database)
+            # （二）创建光标：
+            cur = conn.cursor()
+            # （三）执行SQL指令：
+            cur.execute(sql)
+            # （四）获取所有结果（比如使用了select语句）：
+            # （五）提交当前事务：
+            conn.commit()
+            # （六）关闭光标 & 关闭数据库连接
+            cur.close()
+            conn.close()
+            return cur.rowcount
+        except IOError as e:
+            print(e)
+
+    def length(self, table):
+        """
+        Args:
+            table: 表明
+
+        Returns: 返回表的长度
+        """
+        try:
+            # （一）连接数据库：
+            conn = psycopg2.connect(host=self.host, port=self.port,
+                                    user=self.user, password=self.password, database=self.database)
+            # （二）创建光标：
+            cur = conn.cursor()
+            # （三）执行SQL指令：
+            cur.execute(f'SELECT * FROM {table}')
+            # （四）获取所有结果（比如使用了select语句）：
+            # （五）提交当前事务：
+            # （六）关闭光标 & 关闭数据库连接
+            cur.close()
+            conn.close()
+            return cur.rowcount
+        except IOError as e:
+            print(e)
 
 
 async def record():

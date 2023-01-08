@@ -68,6 +68,7 @@ maskpass
 motuclient
 
 # Database
+psycopg2
 asyncpg
 asyncio
 
