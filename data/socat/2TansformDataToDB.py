@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@File  : 2tansformDataToDB.py
+@File  : 2TansformDataToDB.py
 @Author: zjh
 @Date  : 2023/1/8
 @Update: 2023/1/8
@@ -74,4 +74,6 @@ if __name__ == '__main__':
                      f"VALUES " + values[:-1]
         r = pg.execute(insertsSQL)
         logger.info(f"=== Read chunk: {step}/ sql result: {r} ===")
+
+    logger.info("=====================================================================================================")
 

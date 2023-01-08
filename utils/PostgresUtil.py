@@ -122,7 +122,7 @@ class PostgresqlDB(object):
             # （二）创建光标：
             cur = conn.cursor()
             # （三）执行SQL指令：
-            cur.execute(f'SELECT * FROM {table}')
+            cur.execute(f'SELECT * FROM "{table}"')
             # （四）获取所有结果（比如使用了select语句）：
             # （五）提交当前事务：
             # （六）关闭光标 & 关闭数据库连接

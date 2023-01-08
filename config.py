@@ -26,7 +26,7 @@ def temp():
 
 def linux():
     global PROJECT_ROOT, DATA_ROOT
-    PROJECT_ROOT = '/tmp/pycharm_project_132'
+    PROJECT_ROOT = '/tmp/pycharm_project_395'
     DATA_ROOT = '/home/zjh/Ocean'
 
 
