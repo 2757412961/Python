@@ -16,7 +16,41 @@ from utils.MultiDownload import MulThreadDownload, MulThreadConcurrentDownload, 
 LOG_URL = FileUtil.generate_logfile_url("logs/modis.l3.download.log")
 logger = LogUtil.Logger(LOG_URL)
 # 常量
-
+# refer to web url
+# https://oceancolor.gsfc.nasa.gov/l3/
+# key=种类 value=影像值要素
+PARAMETERS = {
+    'CHL': ['chlor_a'],
+    'FLH': ['ipar'],
+    'KD': ['Kd_490'],
+    'PAR': ['par'],
+    'POC': ['poc'],
+    'PIC': ['pic'],
+    'SST': ['sst'],
+    'SST4': ['sst4'],
+    'IOP': [
+        'bbp_443',
+        'a_412',
+        'a_443',
+        'a_469',
+        'a_488',
+        'a_531',
+        'a_547',
+        'a_555',
+        'a_667',
+        'a_678'],
+    'RRS': [
+        'aot_869',
+        'Rrs_412',
+        'Rrs_443',
+        'Rrs_469',
+        'Rrs_488',
+        'Rrs_531',
+        'Rrs_547',
+        'Rrs_555',
+        'Rrs_667',
+        'Rrs_678']
+}
 
 # Modis L3 png 每日数据Url和文件Path
 def get_web_url_daily_png(classification, parameter, year, month, day):
@@ -75,8 +109,8 @@ def download_daily(begin=datetime.date(1, 1, 1), end=datetime.date(1, 1, 1), par
                 year = time.strftime("%Y")
                 month = time.strftime("%m")
                 day = time.strftime("%d")
-                url = get_web_url_daily_png(k, v, year, month, day)
-                file = get_file_path_daily_png(k, v, year, month, day)
+                url = get_web_url_daily_nc(k, v, year, month, day)
+                file = get_file_path_daily_nc(k, v, year, month, day)
                 FileUtil.check_generate_files(file)
                 if not FileUtil.exist(file):
                     urls.append(url)
@@ -125,53 +159,17 @@ def download_monthly(begin=datetime.date(1, 1, 1), end=datetime.date(1, 1, 1), p
 
 
 if __name__ == '__main__':
-    # refer to web url
-    # https://oceancolor.gsfc.nasa.gov/l3/
-    # key=种类 value=影像值要素
-    PARAMETERS = {
-        'CHL': ['chlor_a'],
-        'FLH': ['ipar'],
-        'KD': ['Kd_490'],
-        'PAR': ['par'],
-        'POC': ['poc'],
-        'PIC': ['pic'],
-        'SST': ['sst'],
-        'SST4': ['sst4'],
-        'IOP': [
-            'bbp_443',
-            'a_412',
-            'a_443',
-            'a_469',
-            'a_488',
-            'a_531',
-            'a_547',
-            'a_555',
-            'a_667',
-            'a_678'],
-        'RRS': [
-            'aot_869',
-            'Rrs_412',
-            'Rrs_443',
-            'Rrs_469',
-            'Rrs_488',
-            'Rrs_531',
-            'Rrs_547',
-            'Rrs_555',
-            'Rrs_667',
-            'Rrs_678']
-    }
-
     begin_date = datetime.date(2003, 1, 1)
     end_date = datetime.date(2022, 1, 1)
 
     ###################
     # 下载每日Modis数据 #
     ###################
-    # download_daily(begin_date, end_date, PARAMETERS)
+    download_daily(begin_date, end_date, PARAMETERS)
 
     ###################
     # 下载每月Modis数据 #
     ###################
-    download_monthly(begin_date, end_date, PARAMETERS)
+    # download_monthly(begin_date, end_date, PARAMETERS)
 
     exit(0)
