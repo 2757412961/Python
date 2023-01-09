@@ -5,6 +5,7 @@
 # @Update: 2022/11/27
 # @Desc  :
 
+import os
 import datetime
 import pandas as pd
 import config
@@ -51,6 +52,7 @@ PARAMETERS = {
         'Rrs_667',
         'Rrs_678']
 }
+
 
 # Modis L3 png 每日数据Url和文件Path
 def get_web_url_daily_png(classification, parameter, year, month, day):
@@ -112,6 +114,8 @@ def download_daily(begin=datetime.date(1, 1, 1), end=datetime.date(1, 1, 1), par
                 url = get_web_url_daily_nc(k, v, year, month, day)
                 file = get_file_path_daily_nc(k, v, year, month, day)
                 FileUtil.check_generate_files(file)
+                # if FileUtil.exist(file):
+                #     os.remove(file)
                 if not FileUtil.exist(file):
                     urls.append(url)
                     files.append(file)
