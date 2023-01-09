@@ -361,7 +361,7 @@ clear hdr3s dfdlg bd df bc cf msg v cruiseflags delim ind5 ncolmax
 output=0;
 if runcode==1
     % 创建一个csv文件
-    fid = fopen('SOCAT.csv', 'w+', 'n', 'utf8');
+    fid = fopen('SOCATv3_v2022.csv', 'w+', 'n', 'utf8');
     % 创建标题 2+6+5+4=17
     fprintf(fid, '%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n', ...
                 "expocode", "qcflag", ...

@@ -38,7 +38,7 @@ importlib-metadata < 5.0; python_version <= "3.7"
 importlib-metadata; python_version > "3.7"
 
 # PyTorch Theme
--e git+https://github.com/pytorch/pytorch_sphinx_theme.git#egg=pytorch_sphinx_theme
+#-e git+https://github.com/pytorch/pytorch_sphinx_theme.git#egg=pytorch_sphinx_theme
 
 ipython
 
@@ -77,3 +77,5 @@ PyCO2SYS
 
 # ERA5
 cdsapi
+
+dask
