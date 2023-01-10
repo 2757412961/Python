@@ -153,7 +153,7 @@ if __name__ == '__main__':
                                f',mld, sid, ssh'
                                f',chlora, kd, poc, pic, sst, bbp, rrs412, rrs443, rrs469, rrs488, rrs531, rrs547, rrs555, rrs667, rrs678'
                                f') VALUES ' + values[:-1])
-                values = 0
+                values = ""
         r = pg.execute(f'INSERT INTO "GLODAP_Interpolate"'
                        f'(expocode,year,month,day,hh,mm,lat,lon,'
                        f'pressure,depth,temperature,salinity,oxygen,nitrate,nitrite,silicate,'
