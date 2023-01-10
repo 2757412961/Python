@@ -142,15 +142,26 @@ if __name__ == '__main__':
                       f",{f(mld)},{f(sid)},{f(ssh)}" \
                       f",{f(chlora)},{f(kd)},{f(poc)},{f(pic)},{f(sst)},{f(bbp)},{f(rrs412)},{f(rrs443)},{f(rrs469)},{f(rrs488)},{f(rrs531)},{f(rrs547)},{f(rrs555)},{f(rrs667)},{f(rrs678)}" \
                       f"),"
-            r = pg.execute(f'INSERT INTO "GLODAP_Interpolate"'
-                           f'(expocode,year,month,day,hh,mm,lat,lon,'
-                           f'pressure,depth,temperature,salinity,oxygen,nitrate,nitrite,silicate,'
-                           f'phosphate,tco2,talk,fco2,phts25p0,phtsinsitutp,toc,doc,'
-                           f'chla'
-                           f',u10, v10, pressureear, sstear, precipitation'
-                           f',mld, sid, ssh'
-                           f',chlora, kd, poc, pic, sst, bbp, rrs412, rrs443, rrs469, rrs488, rrs531, rrs547, rrs555, rrs667, rrs678'
-                           f') VALUES ' + values[:-1])
             logger.info(f"{year}-{month}:step({i + 1})/total({len(lines)})")
+            if i % 100 == 0:
+                r = pg.execute(f'INSERT INTO "GLODAP_Interpolate"'
+                               f'(expocode,year,month,day,hh,mm,lat,lon,'
+                               f'pressure,depth,temperature,salinity,oxygen,nitrate,nitrite,silicate,'
+                               f'phosphate,tco2,talk,fco2,phts25p0,phtsinsitutp,toc,doc,'
+                               f'chla'
+                               f',u10, v10, pressureear, sstear, precipitation'
+                               f',mld, sid, ssh'
+                               f',chlora, kd, poc, pic, sst, bbp, rrs412, rrs443, rrs469, rrs488, rrs531, rrs547, rrs555, rrs667, rrs678'
+                               f') VALUES ' + values[:-1])
+                values = 0
+        r = pg.execute(f'INSERT INTO "GLODAP_Interpolate"'
+                       f'(expocode,year,month,day,hh,mm,lat,lon,'
+                       f'pressure,depth,temperature,salinity,oxygen,nitrate,nitrite,silicate,'
+                       f'phosphate,tco2,talk,fco2,phts25p0,phtsinsitutp,toc,doc,'
+                       f'chla'
+                       f',u10, v10, pressureear, sstear, precipitation'
+                       f',mld, sid, ssh'
+                       f',chlora, kd, poc, pic, sst, bbp, rrs412, rrs443, rrs469, rrs488, rrs531, rrs547, rrs555, rrs667, rrs678'
+                       f') VALUES ' + values[:-1])
 
 logger.info("=====================================================================================================")
