@@ -163,11 +163,11 @@ class MulThreadPoolDownload():
     def parse(self, url, file_path):
         headers = {
             "User-Agent": random.choice(self.ua),
-            'cookie': '_ga=GA1.5.448334129.1672556555; app-obdaac=42e785ef43e9079d84f216221b735e9e81149345; _ga_T0WYSFJPBT=GS1.1.1673290475.1.0.1673290475.0.0.0; _ga=GA1.1.448334129.1672556555; app-obdaac=42e785ef43e9079d84f216221b735e9e81149345'
+            # 'cookie': '_ga=GA1.5.448334129.1672556555; app-obdaac=42e785ef43e9079d84f216221b735e9e81149345; _ga_T0WYSFJPBT=GS1.1.1673290475.1.0.1673290475.0.0.0; _ga=GA1.1.448334129.1672556555; app-obdaac=42e785ef43e9079d84f216221b735e9e81149345'
         }
         # 获取文件的大小
-        response = requests.get(url, headers=headers,
-                                cookies={'app-obdaac': '42e785ef43e9079d84f216221b735e9e81149345; Path=/; Secure;'})
+        response = requests.get(url, headers=headers)
+        # response = requests.get(url, headers=headers, cookies={'app-obdaac': '42e785ef43e9079d84f216221b735e9e81149345; Path=/; Secure;'})
         f = open(file_path, "wb")
         for chunk in response.iter_content(chunk_size=512):
             if chunk:

@@ -111,8 +111,8 @@ def download_daily(begin=datetime.date(1, 1, 1), end=datetime.date(1, 1, 1), par
                 year = time.strftime("%Y")
                 month = time.strftime("%m")
                 day = time.strftime("%d")
-                url = get_web_url_daily_nc(k, v, year, month, day)
-                file = get_file_path_daily_nc(k, v, year, month, day)
+                url = get_web_url_daily_png(k, v, year, month, day)
+                file = get_file_path_daily_png(k, v, year, month, day)
                 FileUtil.check_generate_files(file)
                 # if FileUtil.exist(file):
                 #     os.remove(file)
