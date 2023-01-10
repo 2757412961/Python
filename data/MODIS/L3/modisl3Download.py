@@ -22,26 +22,27 @@ logger = LogUtil.Logger(LOG_URL)
 # key=种类 value=影像值要素
 PARAMETERS = {
     'CHL': ['chlor_a'],
-    'FLH': ['ipar'],
+    # 'FLH': ['ipar'],
     'KD': ['Kd_490'],
-    'PAR': ['par'],
+    # 'PAR': ['par'],
     'POC': ['poc'],
     'PIC': ['pic'],
     'SST': ['sst'],
-    'SST4': ['sst4'],
+    # 'SST4': ['sst4'],
     'IOP': [
         'bbp_443',
-        'a_412',
-        'a_443',
-        'a_469',
-        'a_488',
-        'a_531',
-        'a_547',
-        'a_555',
-        'a_667',
-        'a_678'],
+        # 'a_412',
+        # 'a_443',
+        # 'a_469',
+        # 'a_488',
+        # 'a_531',
+        # 'a_547',
+        # 'a_555',
+        # 'a_667',
+        # 'a_678'
+    ],
     'RRS': [
-        'aot_869',
+        # 'aot_869',
         'Rrs_412',
         'Rrs_443',
         'Rrs_469',
@@ -50,7 +51,8 @@ PARAMETERS = {
         'Rrs_547',
         'Rrs_555',
         'Rrs_667',
-        'Rrs_678']
+        'Rrs_678'
+    ]
 }
 
 

@@ -50,6 +50,8 @@ import asyncpg
 12 cursor.fetchall()
 　　这个例程获取所有查询结果（剩余）行，返回一个列表。空行时则返回空列表。
 '''
+
+
 class PostgresqlDB(object):
     def __init__(self, host, port, user, password, database):
         self.host = host
@@ -129,6 +131,27 @@ class PostgresqlDB(object):
             cur.close()
             conn.close()
             return cur.rowcount
+        except IOError as e:
+            print(e)
+
+    def title(self, table):
+        try:
+            # （一）连接数据库：
+            conn = psycopg2.connect(host=self.host, port=self.port,
+                                    user=self.user, password=self.password, database=self.database)
+            # （二）创建光标：
+            cur = conn.cursor()
+            # （三）执行SQL指令：
+            cur.execute("select * "
+                        "from information_schema.columns "
+                        "where table_schema='public' and table_name='GLODAPv2022' ")
+            # （四）获取所有结果（比如使用了select语句）：
+            results = cur.fetchall()
+            # （五）提交当前事务：
+            # （六）关闭光标 & 关闭数据库连接
+            cur.close()
+            conn.close()
+            return results
         except IOError as e:
             print(e)
 
