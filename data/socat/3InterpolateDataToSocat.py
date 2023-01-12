@@ -93,7 +93,7 @@ if __name__ == '__main__':
     pg = PostgresqlDB(host="10.130.11.4", port=5433, user="postgres", password="postgres", database="postgres")
 
     # 建表
-    createTable(pg, True)
+    createTable(pg, False)
 
     ####################################################################################################################
     # title = pg.title('SOCATv3_v2022')
@@ -101,7 +101,7 @@ if __name__ == '__main__':
 
     ####################################################################################################################
     begin = datetime.date(2003, 1, 1)
-    end = datetime.date(2021, 1, 1)
+    end = datetime.date(2004, 1, 1)
 
     for i in range((end - begin).days + 1):
         time = begin + datetime.timedelta(days=i)
@@ -139,7 +139,7 @@ if __name__ == '__main__':
                       f",{f(mld)},{f(sid)},{f(ssh)}" \
                       f",{f(chlora)},{f(kd)},{f(poc)},{f(pic)},{f(sstoc)},{f(bbp)},{f(rrs412)},{f(rrs443)},{f(rrs469)},{f(rrs488)},{f(rrs531)},{f(rrs547)},{f(rrs555)},{f(rrs667)},{f(rrs678)}" \
                       f"),"
-            logger.info(f"{year}-{month}:step({i + 1})/total({len(lines)})")
+            logger.info(f"{year}-{month}-{day}:step({i + 1})/total({len(lines)})")
             if i % 100 == 0:
                 r = pg.execute(f'INSERT INTO "SOCAT_Interpolate"'
                                f'(expocode,qcflag,year,month,day,hh,mm,ss,'

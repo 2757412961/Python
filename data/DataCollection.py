@@ -55,7 +55,7 @@ class GlobalOceanPhysicsReanalysis(object):
         month = time.strftime("%m")  # 01
         day = time.strftime("%d")  # 02
 
-        base_dir = config.DATA_ROOT + "/CMEMS/Global Ocean Physics Reanalysis"
+        base_dir = config.DATA_ROOT + "/CMEMS/Global_Ocean_Physics_Reanalysis"
         nc_path = base_dir + f"/MULTIOBS_GLO_BIO_CARBON_SURFACE_REP_{year}_{month}.nc"
         self.data = nc.Dataset(nc_path, 'r')
         self.day = int(day) - 1  # 每个月的第i天，转下标

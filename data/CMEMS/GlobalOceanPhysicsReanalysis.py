@@ -4,7 +4,7 @@
 @Author: Zjh
 @Date  : 2022/12/13
 @Update: 2022/12/13
-@Desc  : Global Ocean Physics Reanalysis
+@Desc  : Global_Ocean_Physics_Reanalysis
 
 变量描述：
     Sea water potential temperature at sea floor bottomT [°C]
@@ -26,7 +26,7 @@ import config
 
 if __name__ == '__main__':
     begin = datetime.date(2003, 1, 1)
-    end = datetime.date(2020, 1, 1)
+    end = datetime.date(2021, 1, 1)
 
     periods = (end.year - begin.year) * 12 + (end.month - begin.month)
     time_series = pd.period_range(begin, periods=periods, freq='M')
@@ -50,7 +50,7 @@ if __name__ == '__main__':
               f' --variable sithick'
               f' --variable zos'
               f' --variable mlotst'
-              f' --out-dir "{config.DATA_ROOT}/CMEMS/Global Ocean Physics Reanalysis"'
+              f' --out-dir "{config.DATA_ROOT}/CMEMS/Global_Ocean_Physics_Reanalysis"'
               f' --out-name MULTIOBS_GLO_BIO_CARBON_SURFACE_REP_{this_year}_{this_month}.nc'
               f' --user aturing1'
               f' --pwd MoYan0000')
