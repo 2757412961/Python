@@ -101,26 +101,24 @@ if __name__ == '__main__':
 
     ####################################################################################################################
     begin = datetime.date(2003, 1, 1)
-    end = datetime.date(2021, 1, 1)
-    periods = (end.year - begin.year) * 12 + (end.month - begin.month)
-    time_series = pd.period_range(begin, periods=periods, freq='M')
+    end = datetime.date(2022, 1, 1)
 
-    for t in time_series:  # 2003-08
-        start_time = t.start_time  # 2003-08-01
-        end_time = t.end_time  # 2003-08-31
-        year = start_time.strftime("%Y")  # 2003
-        month = start_time.strftime("%m")  # 01
-        monthSimple = start_time.month  # 1
+    for i in range((end - begin).days + 1):
+        time = begin + datetime.timedelta(days=i)
+        year = time.strftime("%Y")  # 2003
+        month = time.strftime("%m")  # 01
+        day = time.strftime("%d")  # 01
         ############################################
         # 各种变量
-        ear = EAR5(start_time, end_time)
-        gopr = GlobalOceanPhysicsReanalysis(start_time, end_time)
-        oc = OceanColor(start_time, end_time)
+        ear = EAR5(year, month, day)
+        gopr = GlobalOceanPhysicsReanalysis(year, month, day)
+        oc = OceanColor(year, month, day)
         # oc = 1
 
         ############################################
         values = ""
-        lines = pg.search(f'SELECT * FROM "SOCATv3_v2022" WHERE "year" = {year} AND "month" = {monthSimple}')
+        lines = pg.search(f'SELECT * FROM "SOCATv3_v2022" '
+                          f'WHERE "year" = {str(time.year)} AND "month" = {str(time.month)} AND "day" = {str(time.day)}')
         ############################################
         # lats = np.array(lines)[:, 10]
         # lons = np.array(lines)[:, 9]
@@ -129,15 +127,17 @@ if __name__ == '__main__':
         ############################################
         for i in range(len(lines)):
             row = lines[i]
-            day, lat, lon = row[3] - 1, row[10], row[9]
-            u10, v10, pressureear, sstear, precipitation = ear.get(day, lat, lon)
-            mld, sid, ssh = gopr.get(day, lat, lon)
-            chlora, kd, poc, pic, sst, bbp, rrs412, rrs443, rrs469, rrs488, rrs531, rrs547, rrs555, rrs667, rrs678 \
-                = oc.get(day, lat, lon)
-            values += f','.join([f(item) for item in row]) + \
+            day, lat, lon = row[3] - 1, row[10], row[9] - 180
+            u10, v10, pressureear, sstear, precipitation = ear.get(lat, lon)
+            mld, sid, ssh = gopr.get(lat, lon)
+            chlora, kd, poc, pic, sstoc, bbp, rrs412, rrs443, rrs469, rrs488, rrs531, rrs547, rrs555, rrs667, rrs678 \
+                = oc.get(lat, lon)
+            values += f"('{f(row[1])}','{f(row[2])}',{f(row[3])},{f(row[4])},{f(row[5])},{f(row[6])},{f(row[7])}," \
+                      f"{f(row[8])},{f(row[9])},{f(row[10])},{f(row[11])},{f(row[12])},{f(row[13])},{f(row[14])}," \
+                      f"{f(row[15])},{f(row[16])},{f(row[17])}" \
                       f",{f(u10)},{f(v10)},{f(pressureear)},{f(sstear)},{f(precipitation)}" \
                       f",{f(mld)},{f(sid)},{f(ssh)}" \
-                      f",{f(chlora)},{f(kd)},{f(poc)},{f(pic)},{f(sst)},{f(bbp)},{f(rrs412)},{f(rrs443)},{f(rrs469)},{f(rrs488)},{f(rrs531)},{f(rrs547)},{f(rrs555)},{f(rrs667)},{f(rrs678)}" \
+                      f",{f(chlora)},{f(kd)},{f(poc)},{f(pic)},{f(sstoc)},{f(bbp)},{f(rrs412)},{f(rrs443)},{f(rrs469)},{f(rrs488)},{f(rrs531)},{f(rrs547)},{f(rrs555)},{f(rrs667)},{f(rrs678)}" \
                       f"),"
             logger.info(f"{year}-{month}:step({i + 1})/total({len(lines)})")
             if i % 100 == 0:
@@ -146,7 +146,7 @@ if __name__ == '__main__':
                                f'lon,lat,depth,sss,sst,pco2,fco2,fco2rec,fco2recsrc'
                                f',u10, v10, pressureear, sstear, precipitation'
                                f',mld, sid, ssh'
-                               f',chlora, kd, poc, pic, sst, bbp, rrs412, rrs443, rrs469, rrs488, rrs531, rrs547, rrs555, rrs667, rrs678'
+                               f',chlora, kd, poc, pic, sstoc, bbp, rrs412, rrs443, rrs469, rrs488, rrs531, rrs547, rrs555, rrs667, rrs678'
                                f') VALUES ' + values[:-1])
                 values = ""
         r = pg.execute(f'INSERT INTO "SOCAT_Interpolate"'
@@ -154,7 +154,7 @@ if __name__ == '__main__':
                        f'lon,lat,depth,sss,sst,pco2,fco2,fco2rec,fco2recsrc'
                        f',u10, v10, pressureear, sstear, precipitation'
                        f',mld, sid, ssh'
-                       f',chlora, kd, poc, pic, sst, bbp, rrs412, rrs443, rrs469, rrs488, rrs531, rrs547, rrs555, rrs667, rrs678'
+                       f',chlora, kd, poc, pic, sstoc, bbp, rrs412, rrs443, rrs469, rrs488, rrs531, rrs547, rrs555, rrs667, rrs678'
                        f') VALUES ' + values[:-1])
 
 logger.info("=====================================================================================================")

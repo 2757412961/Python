@@ -141,7 +141,7 @@ if __name__ == '__main__':
             day, lat, lon = row[7] - 1, row[10], row[11]
             u10, v10, pressureear, sstear, precipitation = ear.get(day, lat, lon)
             mld, sid, ssh = gopr.get(day, lat, lon)
-            chlora, kd, poc, pic, sst, bbp, rrs412, rrs443, rrs469, rrs488, rrs531, rrs547, rrs555, rrs667, rrs678 \
+            chlora, kd, poc, pic, sstoc, bbp, rrs412, rrs443, rrs469, rrs488, rrs531, rrs547, rrs555, rrs667, rrs678 \
                 = oc.get(day, lat, lon)
             values += f"('{f(row[0])}',{f(row[5])},{f(row[6])},{f(row[7])},{f(row[8])},{f(row[9])},{f(row[10])},{f(row[11])}," \
                       f"{f(row[15])},{f(row[16])},{f(row[17])},{f(row[19])},{f(row[28])},{f(row[33])},{f(row[36])},{f(row[38])}," \
@@ -149,7 +149,7 @@ if __name__ == '__main__':
                       f"{f(row[106])}" \
                       f",{f(u10)},{f(v10)},{f(pressureear)},{f(sstear)},{f(precipitation)}" \
                       f",{f(mld)},{f(sid)},{f(ssh)}" \
-                      f",{f(chlora)},{f(kd)},{f(poc)},{f(pic)},{f(sst)},{f(bbp)},{f(rrs412)},{f(rrs443)},{f(rrs469)},{f(rrs488)},{f(rrs531)},{f(rrs547)},{f(rrs555)},{f(rrs667)},{f(rrs678)}" \
+                      f",{f(chlora)},{f(kd)},{f(poc)},{f(pic)},{f(sstoc)},{f(bbp)},{f(rrs412)},{f(rrs443)},{f(rrs469)},{f(rrs488)},{f(rrs531)},{f(rrs547)},{f(rrs555)},{f(rrs667)},{f(rrs678)}" \
                       f"),"
             logger.info(f"{year}-{month}:step({i + 1})/total({len(lines)})")
             if i % 100 == 0:
@@ -160,7 +160,7 @@ if __name__ == '__main__':
                                f'chla'
                                f',u10, v10, pressureear, sstear, precipitation'
                                f',mld, sid, ssh'
-                               f',chlora, kd, poc, pic, sst, bbp, rrs412, rrs443, rrs469, rrs488, rrs531, rrs547, rrs555, rrs667, rrs678'
+                               f',chlora, kd, poc, pic, sstoc, bbp, rrs412, rrs443, rrs469, rrs488, rrs531, rrs547, rrs555, rrs667, rrs678'
                                f') VALUES ' + values[:-1])
                 values = ""
         r = pg.execute(f'INSERT INTO "GLODAP_Interpolate"'
@@ -170,7 +170,7 @@ if __name__ == '__main__':
                        f'chla'
                        f',u10, v10, pressureear, sstear, precipitation'
                        f',mld, sid, ssh'
-                       f',chlora, kd, poc, pic, sst, bbp, rrs412, rrs443, rrs469, rrs488, rrs531, rrs547, rrs555, rrs667, rrs678'
+                       f',chlora, kd, poc, pic, sstoc, bbp, rrs412, rrs443, rrs469, rrs488, rrs531, rrs547, rrs555, rrs667, rrs678'
                        f') VALUES ' + values[:-1])
 
 logger.info("=====================================================================================================")
