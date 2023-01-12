@@ -79,3 +79,4 @@ PyCO2SYS
 cdsapi
 
 dask
+cartopy
