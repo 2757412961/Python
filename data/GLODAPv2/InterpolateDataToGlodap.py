@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 """
-@File  : InterpolateDataToDB.py
+@File  : InterpolateDataToGlodap.py
 @Author: zjh
 @Date  : 2023/1/8
 @Update: 2023/1/8
 @Desc  :
 """
 
+import numpy as np
 import pandas as pd
 import datetime
 from utils import LogUtil
 from utils import FileUtil
 from utils.PostgresUtil import PostgresqlDB
-from DataCollection import EAR5, GlobalOceanPhysicsReanalysis, OceanColor
+from utils import MapTuil
+from data.DataCollection import EAR5, GlobalOceanPhysicsReanalysis, OceanColor
 
 # 日志
 LOG_URL = FileUtil.generate_logfile_url("logs/InterpolateOtherDataToDB.log")
@@ -21,7 +23,7 @@ logger = LogUtil.Logger(LOG_URL)
 
 def f(a):
     a = str(a)
-    if a == 'nan' or a == '--':
+    if a == 'nan' or a == '--' or a == 'None':
         return '-9999'
     return a
 
@@ -30,68 +32,68 @@ def createTable(pg, isCreate=True):
     # 建表
     if isCreate:
         r = pg.execute('''
-                -- ----------------------------
-                -- Table structure for GLODAP_Interpolate
-                -- ----------------------------
-                DROP TABLE IF EXISTS "public"."GLODAP_Interpolate";
-                CREATE TABLE "public"."GLODAP_Interpolate" (
-                  "id" serial primary key,
-                  "expocode" varchar(255) COLLATE "pg_catalog"."default",
-                  "year" int4,
-                  "month" int4,
-                  "day" int4,
-                  "hh" int4,
-                  "mm" int4,
-                  "lat" float8,
-                  "lon" float8,
-                  
-                  "pressure" float8,
-                  "depth" float8,
-                  "temperature" float8,
-                  "salinity" float8,
-                  "oxygen" float8,
-                  "nitrate" float8,
-                  "nitrite" float8,
-                  "silicate" float8,
-                  
-                  "phosphate" float8,
-                  "tco2" float8,
-                  "talk" float8,
-                  "fco2" float8,
-                  "phts25p0" float8,
-                  "phtsinsitutp" float8,
-                  "toc" float8,
-                  "doc" float8,
-                  
-                  "chla" float8
-                  
-                  ,"u10" float8
-                  ,"v10" float8
-                  ,"pressureear" float8
-                  ,"sstear" float8
-                  ,"precipitation" float8
-                  
-                  ,"mld" float8
-                  ,"sid" float8
-                  ,"ssh" float8
-                  
-                  ,"chlora" float8
-                  ,"kd" float8
-                  ,"poc" float8
-                  ,"pic" float8
-                  ,"sst" float8
-                  ,"bbp" float8
-                  ,"rrs412" float8
-                  ,"rrs443" float8
-                  ,"rrs469" float8
-                  ,"rrs488" float8
-                  ,"rrs531" float8
-                  ,"rrs547" float8
-                  ,"rrs555" float8
-                  ,"rrs667" float8
-                  ,"rrs678" float8
-                )
-                ;
+            -- ----------------------------
+            -- Table structure for GLODAP_Interpolate
+            -- ----------------------------
+            DROP TABLE IF EXISTS "public"."GLODAP_Interpolate";
+            CREATE TABLE "public"."GLODAP_Interpolate" (
+              "id" serial primary key,
+              "expocode" varchar(255) COLLATE "pg_catalog"."default",
+              "year" int4,
+              "month" int4,
+              "day" int4,
+              "hh" int4,
+              "mm" int4,
+              "lat" float8,
+              "lon" float8,
+              
+              "pressure" float8,
+              "depth" float8,
+              "temperature" float8,
+              "salinity" float8,
+              "oxygen" float8,
+              "nitrate" float8,
+              "nitrite" float8,
+              "silicate" float8,
+              
+              "phosphate" float8,
+              "tco2" float8,
+              "talk" float8,
+              "fco2" float8,
+              "phts25p0" float8,
+              "phtsinsitutp" float8,
+              "toc" float8,
+              "doc" float8,
+              
+              "chla" float8
+              
+              ,"u10" float8
+              ,"v10" float8
+              ,"pressureear" float8
+              ,"sstear" float8
+              ,"precipitation" float8
+              
+              ,"mld" float8
+              ,"sid" float8
+              ,"ssh" float8
+              
+              ,"chlora" float8
+              ,"kd" float8
+              ,"poc" float8
+              ,"pic" float8
+              ,"sstoc" float8
+              ,"bbp" float8
+              ,"rrs412" float8
+              ,"rrs443" float8
+              ,"rrs469" float8
+              ,"rrs488" float8
+              ,"rrs531" float8
+              ,"rrs547" float8
+              ,"rrs555" float8
+              ,"rrs667" float8
+              ,"rrs678" float8
+            )
+            ;
             ''')
         logger.info(r)
 
@@ -107,8 +109,8 @@ if __name__ == '__main__':
     # sample = pg.search('Select * From "GLODAPv2022" Limit 10')
 
     ####################################################################################################################
-    begin = datetime.date(2004, 1, 1)
-    end = datetime.date(2022, 1, 1)
+    begin = datetime.date(2003, 1, 1)
+    end = datetime.date(2021, 1, 1)
     periods = (end.year - begin.year) * 12 + (end.month - begin.month)
     time_series = pd.period_range(begin, periods=periods, freq='M')
 
@@ -122,11 +124,18 @@ if __name__ == '__main__':
         # 各种变量
         ear = EAR5(start_time, end_time)
         gopr = GlobalOceanPhysicsReanalysis(start_time, end_time)
-        oc = OceanColor(start_time, end_time)
+        # oc = OceanColor(start_time, end_time)
+        oc=1
 
         ############################################
         values = ""
         lines = pg.search(f'SELECT * FROM "GLODAPv2022" WHERE "G2year" = {year} AND "G2month" = {monthSimple}')
+        ############################################
+        lats = np.array(lines)[:, 10]
+        lons = np.array(lines)[:, 11]
+        MapTuil.draw_points([float(it) for it in lons], [float(it) for it in lats])
+        continue
+        ############################################
         for i in range(len(lines)):
             row = lines[i]
             day, lat, lon = row[7] - 1, row[10], row[11]
