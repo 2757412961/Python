@@ -101,7 +101,7 @@ if __name__ == '__main__':
 
     ####################################################################################################################
     begin = datetime.date(2003, 1, 1)
-    end = datetime.date(2022, 1, 1)
+    end = datetime.date(2021, 1, 1)
 
     for i in range((end - begin).days + 1):
         time = begin + datetime.timedelta(days=i)
